@@ -1,0 +1,84 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/doctor/orders' }) %>
+<%- include('../partials/navbar', { pageTitle: 'My Orders' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>My Orders</h1>
+        <p>All test orders you have created.</p>
+      </div>
+      <a href="/doctor/orders/new" class="labtm-btn labtm-btn-primary">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Order
+      </a>
+    </div>
+
+    <!-- Status filter -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-flex labtm-flex-gap-2 labtm-flex-wrap">
+        <% const statuses = ['', 'requested', 'sample_collected', 'in_progress', 'completed', 'cancelled']; %>
+        <% const labels   = {'':'All', 'requested':'Requested', 'sample_collected':'Sample Collected', 'in_progress':'In Progress', 'completed':'Completed', 'cancelled':'Cancelled'}; %>
+        <% for (const s of statuses) { %>
+        <a href="/doctor/orders?<%= s ? 'status=' + s : '' %>"
+           class="labtm-btn labtm-btn-sm <%= statusFilter === s ? 'labtm-btn-primary' : 'labtm-btn-outline' %>">
+          <%= labels[s] %>
+        </a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="labtm-card">
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Patient</th>
+              <th>Tests</th>
+              <th>Status</th>
+              <th>Order Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!orders.length) { %>
+            <tr><td colspan="6" class="labtm-table-empty">No orders found.</td></tr>
+            <% } %>
+            <% for (const o of orders) { %>
+            <tr>
+              <td><strong class="labtm-font-mono"><%= o.order_number %></strong></td>
+              <td>
+                <div class="labtm-font-semibold"><%= o.patient_name %></div>
+                <div class="labtm-text-xs labtm-text-muted"><%= o.patient_unique_id %></div>
+              </td>
+              <td class="labtm-text-sm">
+                <span class="labtm-font-semibold"><%= o.verified_count || 0 %></span>/<%= o.item_count %>
+              </td>
+              <td>
+                <span class="labtm-status labtm-status-<%= o.status %>">
+                  <%= o.status.replace(/_/g, ' ') %>
+                </span>
+              </td>
+              <td class="labtm-text-sm labtm-text-muted"><%= new Date(o.order_date).toLocaleDateString('en-GB') %></td>
+              <td>
+                <div class="labtm-flex labtm-flex-gap-2">
+                  <a href="/doctor/orders/<%= o.id %>" class="labtm-btn labtm-btn-outline labtm-btn-sm">View</a>
+                  <% if (o.status === 'completed') { %>
+                  <a href="/doctor/report/<%= o.id %>" class="labtm-btn labtm-btn-accent labtm-btn-sm">Report</a>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

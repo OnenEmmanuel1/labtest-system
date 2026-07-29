@@ -1,0 +1,69 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/technician/collect' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Sample Collection' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Sample Collection</h1>
+        <p>Orders requesting sample collection, oldest first.</p>
+      </div>
+    </div>
+
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Pending Collection</div>
+          <div class="labtm-card-subtitle"><%= orders.length %> order<%= orders.length !== 1 ? 's' : '' %> awaiting sample</div>
+        </div>
+      </div>
+
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Tests</th>
+              <th>Order Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!orders.length) { %>
+            <tr><td colspan="6" class="labtm-table-empty">
+              No orders awaiting collection — all samples collected ✓
+            </td></tr>
+            <% } %>
+            <% for (const o of orders) { %>
+            <tr>
+              <td><strong class="labtm-font-mono"><%= o.order_number %></strong></td>
+              <td>
+                <div class="labtm-font-semibold"><%= o.patient_name %></div>
+                <div class="labtm-text-xs labtm-text-muted"><%= o.patient_unique_id %></div>
+              </td>
+              <td class="labtm-text-sm">Dr. <%= o.doctor_name %></td>
+              <td class="labtm-text-sm"><%= o.item_count %> test<%= o.item_count !== 1 ? 's' : '' %></td>
+              <td class="labtm-text-sm labtm-text-muted">
+                <%= new Date(o.order_date).toLocaleDateString('en-GB') %>
+              </td>
+              <td>
+                <a href="/technician/collect/<%= o.id %>" class="labtm-btn labtm-btn-accent">
+                  <svg viewBox="0 0 24 24"><path d="M10 2v7"/><path d="M14 9V2"/><path d="M8 2h8"/><path d="M14 9a6.5 6.5 0 11-4 0"/></svg>
+                  Collect Sample
+                </a>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

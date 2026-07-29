@@ -1,0 +1,115 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/doctor/orders' }) %>
+<%- include('../partials/navbar', { pageTitle: 'New Test Order' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-breadcrumb">
+      <a href="/doctor/orders">Orders</a>
+      <span class="labtm-breadcrumb-sep">/</span>
+      <span>New Order</span>
+    </div>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>New Test Order</h1>
+        <p>Select a patient and the tests you want to request.</p>
+      </div>
+    </div>
+
+    <form method="POST" action="/doctor/orders" id="orderForm">
+
+      <!-- Patient selection -->
+      <div class="labtm-card labtm-mb-6">
+        <div class="labtm-card-title labtm-mb-4">1. Select Patient</div>
+
+        <% if (patient) { %>
+        <!-- Patient pre-selected -->
+        <input type="hidden" name="patient_id" value="<%= patient.id %>" />
+        <div class="labtm-alert labtm-alert-info">
+          <div>
+            <strong><%= patient.name %></strong>
+            <span class="labtm-text-muted"> — <code class="labtm-code"><%= patient.patient_unique_id %></code></span>
+            &nbsp;
+            DOB: <%= new Date(patient.date_of_birth).toLocaleDateString('en-GB') %> &nbsp;|&nbsp;
+            Gender: <%= patient.gender %>
+            <span style="margin-left:var(--labtm-space-4)">
+              <a href="/doctor/orders/new" class="labtm-text-sm" style="color:var(--labtm-primary-light)">Change patient</a>
+            </span>
+          </div>
+        </div>
+        <% } else { %>
+        <div class="labtm-form-group" style="max-width:480px">
+          <label class="labtm-label" for="patient_id">Patient <span class="required">*</span></label>
+          <select class="labtm-select" name="patient_id" id="patient_id" required>
+            <option value="">Select patient…</option>
+            <% for (const p of patients) { %>
+            <option value="<%= p.id %>"><%= p.name %> (<%= p.patient_unique_id %>)</option>
+            <% } %>
+          </select>
+          <div class="labtm-form-hint">
+            Patient not listed? <a href="/doctor/patients/new">Register a new patient →</a>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Test selection -->
+      <div class="labtm-card labtm-mb-6">
+        <div class="labtm-card-title labtm-mb-4">2. Select Tests</div>
+        <div class="labtm-form-hint labtm-mb-4">Click to select one or more tests. At least one required.</div>
+
+        <%
+          // Group tests by department
+          const deptMap = {};
+          for (const t of tests) {
+            if (!deptMap[t.department_name]) deptMap[t.department_name] = [];
+            deptMap[t.department_name].push(t);
+          }
+        %>
+
+        <% for (const [dept, deptTests] of Object.entries(deptMap)) { %>
+        <div class="labtm-mb-4">
+          <div class="labtm-text-xs labtm-font-semibold labtm-text-muted" style="text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--labtm-space-2)">
+            <%= dept %>
+          </div>
+          <div class="labtm-checkbox-group">
+            <% for (const t of deptTests) { %>
+            <label class="labtm-checkbox-item">
+              <input type="checkbox" name="test_ids" value="<%= t.id %>" />
+              <span class="labtm-checkbox-item-check"></span>
+              <div>
+                <div><%= t.test_name %></div>
+                <div class="labtm-test-price">₦<%= parseFloat(t.price).toLocaleString() %> · <%= t.turnaround_time_hours %>h TAT</div>
+                <% if (t.reference_low !== null) { %>
+                <div class="labtm-test-dept">Ref: <%= parseFloat(t.reference_low) %>–<%= parseFloat(t.reference_high) %> <%= t.unit %></div>
+                <% } %>
+              </div>
+            </label>
+            <% } %>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Notes and submit -->
+      <div class="labtm-card labtm-mb-6">
+        <div class="labtm-card-title labtm-mb-4">3. Clinical Notes (optional)</div>
+        <textarea class="labtm-textarea" name="notes" placeholder="Clinical indication, relevant history, special instructions…" style="max-width:600px"></textarea>
+      </div>
+
+      <div class="labtm-flex labtm-flex-gap-3">
+        <button type="submit" class="labtm-btn labtm-btn-primary labtm-btn-lg">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+          Create Order
+        </button>
+        <a href="/doctor/orders" class="labtm-btn labtm-btn-ghost labtm-btn-lg">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

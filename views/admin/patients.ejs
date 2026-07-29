@@ -1,0 +1,79 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/patients' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Patients' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>All Patients</h1>
+        <p>Administrator view — patient records management (only admin can delete).</p>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="labtm-card labtm-mb-6">
+      <form method="GET" action="/admin/patients" class="labtm-search-bar">
+        <input class="labtm-input" type="text" name="q" value="<%= search %>"
+               placeholder="Search name, phone, or patient ID…" />
+        <button type="submit" class="labtm-btn labtm-btn-primary">Search</button>
+        <% if (search) { %><a href="/admin/patients" class="labtm-btn labtm-btn-ghost">Clear</a><% } %>
+      </form>
+    </div>
+
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Patient Records</div>
+          <div class="labtm-card-subtitle"><%= patients.length %> result<%= patients.length !== 1 ? 's' : '' %></div>
+        </div>
+      </div>
+
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Patient ID</th>
+              <th>Name</th>
+              <th>DOB</th>
+              <th>Gender</th>
+              <th>Phone</th>
+              <th>Registered</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!patients.length) { %>
+            <tr><td colspan="7" class="labtm-table-empty">No patients found.</td></tr>
+            <% } %>
+            <% for (const p of patients) { %>
+            <tr>
+              <td><code class="labtm-code"><%= p.patient_unique_id %></code></td>
+              <td class="labtm-font-semibold"><%= p.name %></td>
+              <td class="labtm-text-sm"><%= new Date(p.date_of_birth).toLocaleDateString('en-GB') %></td>
+              <td class="labtm-text-sm" style="text-transform:capitalize"><%= p.gender %></td>
+              <td class="labtm-text-sm"><%= p.phone || '—' %></td>
+              <td class="labtm-text-sm labtm-text-muted"><%= new Date(p.created_at).toLocaleDateString('en-GB') %></td>
+              <td>
+                <form method="POST" action="/admin/patients/<%= p.id %>/delete"
+                      onsubmit="return confirm('Permanently delete patient <%= p.name %>? This cannot be undone.')">
+                  <button class="labtm-btn labtm-btn-danger labtm-btn-sm" type="submit">Delete</button>
+                </form>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="labtm-alert labtm-alert-warning labtm-mt-4">
+      <strong>Note:</strong> Only administrators can delete patient records. Doctors and technicians cannot.
+      Deletion is permanent and will fail if the patient has associated orders.
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

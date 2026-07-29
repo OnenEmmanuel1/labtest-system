@@ -1,0 +1,106 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/doctor/dashboard' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Doctor Dashboard' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Welcome, <%= user.name %>. Manage your patients and test orders.</p>
+      </div>
+      <div class="labtm-page-header-actions">
+        <a href="/doctor/patients/new" class="labtm-btn labtm-btn-outline">Register Patient</a>
+        <a href="/doctor/orders/new" class="labtm-btn labtm-btn-primary">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Order
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="labtm-stats-grid">
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">My Orders</div>
+        <div class="labtm-stat-card-value"><%= stats.total %></div>
+        <div class="labtm-stat-card-sub">Total test orders</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Awaiting Sample</div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-status-requested)"><%= stats.requested %></div>
+        <div class="labtm-stat-card-sub">Requested, not collected</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">In Progress</div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-status-in_progress)"><%= (stats.sample_collected || 0) + (stats.in_progress || 0) %></div>
+        <div class="labtm-stat-card-sub">Being processed</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Completed</div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-normal)"><%= stats.completed %></div>
+        <div class="labtm-stat-card-sub">All results verified</div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">My Recent Orders</div>
+          <div class="labtm-card-subtitle">Last 10 orders you created</div>
+        </div>
+        <a href="/doctor/orders" class="labtm-btn labtm-btn-outline labtm-btn-sm">View All</a>
+      </div>
+
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Patient</th>
+              <th>Tests</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!myOrders.length) { %>
+            <tr><td colspan="6" class="labtm-table-empty">No orders yet. <a href="/doctor/orders/new">Create your first order →</a></td></tr>
+            <% } %>
+            <% for (const o of myOrders) { %>
+            <tr>
+              <td><strong class="labtm-font-mono"><%= o.order_number %></strong></td>
+              <td>
+                <div class="labtm-font-semibold"><%= o.patient_name %></div>
+                <div class="labtm-text-xs labtm-text-muted"><%= o.patient_unique_id %></div>
+              </td>
+              <td class="labtm-text-sm">
+                <span class="labtm-font-semibold"><%= o.verified_count || 0 %></span>/<%= o.item_count %> verified
+              </td>
+              <td>
+                <span class="labtm-status labtm-status-<%= o.status %>">
+                  <%= o.status.replace(/_/g, ' ') %>
+                </span>
+              </td>
+              <td class="labtm-text-sm labtm-text-muted"><%= new Date(o.order_date).toLocaleDateString('en-GB') %></td>
+              <td>
+                <div class="labtm-flex labtm-flex-gap-2">
+                  <a href="/doctor/orders/<%= o.id %>" class="labtm-btn labtm-btn-outline labtm-btn-sm">View</a>
+                  <% if (o.status === 'completed') { %>
+                  <a href="/doctor/report/<%= o.id %>" class="labtm-btn labtm-btn-accent labtm-btn-sm">Report</a>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

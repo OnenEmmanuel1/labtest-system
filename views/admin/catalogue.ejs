@@ -1,0 +1,101 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/catalogue' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Test Catalogue' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Test Catalogue</h1>
+        <p>Manage all diagnostic tests, reference ranges, and pricing.</p>
+      </div>
+      <div class="labtm-page-header-actions">
+        <a href="/admin/catalogue/new" class="labtm-btn labtm-btn-primary">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Test
+        </a>
+      </div>
+    </div>
+
+    <!-- Group by category -->
+    <%
+    const categories = [...new Set(tests.map(t => t.category))].sort();
+    %>
+    <% for (const cat of categories) { %>
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-header">
+        <div class="labtm-card-title"><%= cat %></div>
+      </div>
+      <div class="labtm-table-wrap" style="border:none;border-radius:0;">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Unit</th>
+              <th>Ref. Range</th>
+              <th>TAT (hrs)</th>
+              <th>Price (₦)</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% for (const t of tests.filter(x => x.category === cat)) { %>
+            <tr>
+              <td>
+                <div class="labtm-font-semibold"><%= t.name %></div>
+                <% if (t.description) { %>
+                <div class="labtm-text-sm labtm-text-muted"><%= t.description.substring(0, 60) %>...</div>
+                <% } %>
+              </td>
+              <td class="labtm-text-sm"><%= t.unit || '—' %></td>
+              <td class="labtm-text-sm" style="font-variant-numeric:tabular-nums;white-space:nowrap;">
+                <%= t.reference_low !== null ? t.reference_low : '—' %>
+                –
+                <%= t.reference_high !== null ? t.reference_high : '—' %>
+                <span class="labtm-text-muted"><%= t.unit || '' %></span>
+              </td>
+              <td class="labtm-text-sm"><%= t.turnaround_target_hours %>h</td>
+              <td class="labtm-text-sm labtm-font-semibold">
+                <%= parseFloat(t.price).toLocaleString('en-NG', {minimumFractionDigits:2}) %>
+              </td>
+              <td>
+                <% if (t.is_active) { %>
+                <span class="labtm-status labtm-status-complete">Active</span>
+                <% } else { %>
+                <span class="labtm-status labtm-status-rejected">Inactive</span>
+                <% } %>
+              </td>
+              <td>
+                <a href="/admin/catalogue/<%= t.id %>/edit" class="labtm-btn labtm-btn-outline labtm-btn-sm">Edit</a>
+                <form method="POST" action="/admin/catalogue/<%= t.id %>/delete" style="display:inline;"
+                      onsubmit="return confirm('Deactivate this test?')">
+                  <button type="submit" class="labtm-btn labtm-btn-danger labtm-btn-sm">Deactivate</button>
+                </form>
+              </td>
+            </tr>
+          <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+
+    <% if (tests.length === 0) { %>
+    <div class="labtm-card">
+      <div class="labtm-empty">
+        <div class="labtm-empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <h3>No Tests in Catalogue</h3>
+        <p>Start by adding your first diagnostic test.</p>
+        <a href="/admin/catalogue/new" class="labtm-btn labtm-btn-primary">Add First Test</a>
+      </div>
+    </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

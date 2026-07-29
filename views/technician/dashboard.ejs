@@ -1,0 +1,159 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/technician/dashboard' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Lab Workbench' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Lab Workbench</h1>
+        <p>Welcome, <%= user.name %>. View your pending tasks and today's activity.</p>
+      </div>
+    </div>
+
+    <!-- Today's Activity -->
+    <div class="labtm-stats-grid">
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Samples Collected Today</div>
+        <div class="labtm-stat-card-value"><%= myToday.collected %></div>
+        <div class="labtm-stat-card-sub">By you today</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Results Entered Today</div>
+        <div class="labtm-stat-card-value"><%= myToday.entered %></div>
+        <div class="labtm-stat-card-sub">By you today</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Results Verified Today</div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-normal)"><%= myToday.verified %></div>
+        <div class="labtm-stat-card-sub">Locked & verified</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Awaiting Verification</div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-status-in_progress)"><%= pendingVerification.length %></div>
+        <div class="labtm-stat-card-sub">System-wide</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--labtm-space-6);margin-bottom:var(--labtm-space-6)">
+
+      <!-- Awaiting Collection -->
+      <div class="labtm-card">
+        <div class="labtm-card-header">
+          <div>
+            <div class="labtm-card-title">Awaiting Sample Collection</div>
+            <div class="labtm-card-subtitle"><%= pendingCollection.length %> order<%= pendingCollection.length !== 1 ? 's' : '' %></div>
+          </div>
+          <a href="/technician/collect" class="labtm-btn labtm-btn-outline labtm-btn-sm">View All</a>
+        </div>
+
+        <% if (!pendingCollection.length) { %>
+        <div class="labtm-empty" style="padding:var(--labtm-space-8)">
+          <div class="labtm-text-sm labtm-text-muted">All orders have samples collected ✓</div>
+        </div>
+        <% } %>
+
+        <% for (const o of pendingCollection) { %>
+        <div style="border:1px solid var(--labtm-border);border-radius:var(--labtm-radius-sm);padding:var(--labtm-space-4);margin-bottom:var(--labtm-space-3)">
+          <div class="labtm-flex-between">
+            <div>
+              <div class="labtm-font-semibold labtm-text-sm"><%= o.patient_name %></div>
+              <div class="labtm-text-xs labtm-text-muted"><%= o.order_number %> · <%= o.item_count %> test<%= o.item_count !== 1 ? 's' : '' %></div>
+              <div class="labtm-text-xs labtm-text-muted">Dr. <%= o.doctor_name %></div>
+            </div>
+            <a href="/technician/collect/<%= o.id %>" class="labtm-btn labtm-btn-accent labtm-btn-sm">Collect</a>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Awaiting Result Entry -->
+      <div class="labtm-card">
+        <div class="labtm-card-header">
+          <div>
+            <div class="labtm-card-title">Awaiting Result Entry</div>
+            <div class="labtm-card-subtitle"><%= pendingResults.length %> test<%= pendingResults.length !== 1 ? 's' : '' %></div>
+          </div>
+          <a href="/technician/results" class="labtm-btn labtm-btn-outline labtm-btn-sm">Enter Results</a>
+        </div>
+
+        <% if (!pendingResults.length) { %>
+        <div class="labtm-empty" style="padding:var(--labtm-space-8)">
+          <div class="labtm-text-sm labtm-text-muted">All results have been entered ✓</div>
+        </div>
+        <% } %>
+
+        <% for (const item of pendingResults.slice(0, 5)) { %>
+        <div style="border:1px solid var(--labtm-border);border-radius:var(--labtm-radius-sm);padding:var(--labtm-space-4);margin-bottom:var(--labtm-space-3)">
+          <div class="labtm-flex-between">
+            <div>
+              <div class="labtm-font-semibold labtm-text-sm"><%= item.test_name %></div>
+              <div class="labtm-text-xs labtm-text-muted"><%= item.patient_name %> · <code style="font-size:10px"><%= item.sample_code %></code></div>
+            </div>
+            <a href="/technician/results/<%= item.id %>/enter" class="labtm-btn labtm-btn-primary labtm-btn-sm">Enter</a>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Awaiting Verification -->
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Awaiting Verification</div>
+          <div class="labtm-card-subtitle">Results entered but not yet verified — action required</div>
+        </div>
+        <a href="/technician/verify" class="labtm-btn labtm-btn-accent">Verify Results →</a>
+      </div>
+
+      <% if (!pendingVerification.length) { %>
+      <div class="labtm-empty" style="padding:var(--labtm-space-8)">
+        <div class="labtm-text-sm labtm-text-muted">No results awaiting verification ✓</div>
+      </div>
+      <% } else { %>
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Test</th>
+              <th>Patient</th>
+              <th>Result</th>
+              <th>Flag</th>
+              <th>Entered</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (const r of pendingVerification) { %>
+            <tr>
+              <td class="labtm-font-semibold labtm-text-sm"><%= r.test_name %></td>
+              <td>
+                <div class="labtm-text-sm"><%= r.patient_name %></div>
+                <div class="labtm-text-xs labtm-text-muted"><%= r.sample_code %></div>
+              </td>
+              <td class="labtm-font-mono labtm-font-semibold">
+                <%= r.result_value %> <%= r.unit || '' %>
+              </td>
+              <td>
+                <%- include('../partials/result-flag', { flag: r.flag }) %>
+              </td>
+              <td class="labtm-text-xs labtm-text-muted">
+                <%= new Date(r.entered_at).toLocaleDateString('en-GB') %>
+              </td>
+              <td>
+                <a href="/technician/verify" class="labtm-btn labtm-btn-accent labtm-btn-sm">Verify</a>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

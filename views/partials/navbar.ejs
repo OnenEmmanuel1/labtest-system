@@ -1,0 +1,13 @@
+<nav class="labtm-navbar">
+  <div class="labtm-navbar-left">
+    <span class="labtm-navbar-page-title"><%= typeof pageTitle !== 'undefined' ? pageTitle : '' %></span>
+  </div>
+  <div class="labtm-navbar-right">
+    <% if (user) { %>
+    <div class="labtm-navbar-user">
+      <span class="labtm-role-badge <%= user.role %>"><%= user.role %></span>
+      <span><%= user.name %></span>
+    </div>
+    <% } %>
+  </div>
+</nav>

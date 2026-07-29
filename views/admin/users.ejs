@@ -1,0 +1,73 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/users' }) %>
+<%- include('../partials/navbar', { pageTitle: 'User Management' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>User Management</h1>
+        <p>Manage system accounts for administrators, doctors, and technicians.</p>
+      </div>
+      <div class="labtm-page-header-actions">
+        <a href="/admin/users/new" class="labtm-btn labtm-btn-primary">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add User
+        </a>
+      </div>
+    </div>
+
+    <div class="labtm-card">
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!users.length) { %>
+            <tr><td colspan="6" class="labtm-table-empty">No users found.</td></tr>
+            <% } %>
+            <% for (const u of users) { %>
+            <tr>
+              <td class="labtm-font-semibold"><%= u.name %></td>
+              <td class="labtm-text-sm"><%= u.email %></td>
+              <td>
+                <span class="labtm-role-badge <%= u.role %>"><%= u.role %></span>
+              </td>
+              <td>
+                <span class="labtm-status <%= u.is_active ? 'labtm-status-completed' : 'labtm-status-cancelled' %>">
+                  <%= u.is_active ? 'Active' : 'Inactive' %>
+                </span>
+              </td>
+              <td class="labtm-text-sm labtm-text-muted"><%= new Date(u.created_at).toLocaleDateString('en-GB') %></td>
+              <td>
+                <div class="labtm-flex labtm-flex-gap-2">
+                  <a href="/admin/users/<%= u.id %>/edit" class="labtm-btn labtm-btn-outline labtm-btn-sm">Edit</a>
+                  <% if (u.id !== user.id) { %>
+                  <form method="POST" action="/admin/users/<%= u.id %>/delete" onsubmit="return confirm('Deactivate this user?')">
+                    <button class="labtm-btn labtm-btn-ghost labtm-btn-sm" style="color:var(--labtm-abnormal-high)">
+                      <%= u.is_active ? 'Deactivate' : 'Deleted' %>
+                    </button>
+                  </form>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

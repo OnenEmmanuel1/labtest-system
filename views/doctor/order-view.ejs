@@ -1,0 +1,144 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/doctor/orders' }) %>
+<%- include('../partials/navbar', { pageTitle: order.order_number }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-breadcrumb">
+      <a href="/doctor/orders">Orders</a>
+      <span class="labtm-breadcrumb-sep">/</span>
+      <span><%= order.order_number %></span>
+    </div>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Order: <span class="labtm-font-mono"><%= order.order_number %></span></h1>
+        <div class="labtm-flex labtm-flex-gap-3 labtm-mt-2">
+          <span class="labtm-status labtm-status-<%= order.status %>">
+            <%= order.status.replace(/_/g, ' ') %>
+          </span>
+          <span class="labtm-text-muted labtm-text-sm">
+            Ordered: <%= new Date(order.order_date).toLocaleDateString('en-GB') %>
+          </span>
+        </div>
+      </div>
+      <div class="labtm-page-header-actions">
+        <% if (order.status === 'completed') { %>
+        <a href="/doctor/report/<%= order.id %>" class="labtm-btn labtm-btn-accent">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          View Report
+        </a>
+        <a href="/doctor/report/<%= order.id %>?print=1" class="labtm-btn labtm-btn-outline" target="_blank">
+          <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Print
+        </a>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Patient & order details -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-title labtm-mb-4">Patient & Order Information</div>
+      <div class="labtm-detail-grid">
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Patient</div>
+          <div class="labtm-detail-value">
+            <a href="/doctor/patients/<%= order.patient_id %>"><%= order.patient_name %></a>
+          </div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Patient ID</div>
+          <div class="labtm-detail-value"><code class="labtm-code"><%= order.patient_unique_id %></code></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">DOB</div>
+          <div class="labtm-detail-value"><%= new Date(order.date_of_birth).toLocaleDateString('en-GB') %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Gender</div>
+          <div class="labtm-detail-value" style="text-transform:capitalize"><%= order.gender %></div>
+        </div>
+        <% if (order.notes) { %>
+        <div class="labtm-detail-item" style="grid-column: span 2">
+          <div class="labtm-detail-label">Clinical Notes</div>
+          <div class="labtm-detail-value"><%= order.notes %></div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Test Results -->
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Test Results</div>
+          <div class="labtm-card-subtitle"><%= items.filter(i => i.verified).length %> of <%= items.length %> tests verified</div>
+        </div>
+      </div>
+
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Test</th>
+              <th>Department</th>
+              <th>Result</th>
+              <th>Reference Range</th>
+              <th>Flag</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (const item of items) { %>
+            <tr class="<%= item.flag && (item.flag === 'abnormal_high' || item.flag === 'abnormal_low') && item.verified ? 'labtm-result-highlight' : '' %>">
+              <td class="labtm-font-semibold"><%= item.test_name %></td>
+              <td><span class="labtm-tag"><%= item.department_name %></span></td>
+              <td>
+                <% if (item.result_value) { %>
+                <strong style="font-size:var(--labtm-fs-md);color:<%= item.flag === 'abnormal_high' ? 'var(--labtm-abnormal-high)' : item.flag === 'abnormal_low' ? 'var(--labtm-abnormal-low)' : 'var(--labtm-text-primary)' %>">
+                  <%= item.result_value %> <%= item.unit || '' %>
+                </strong>
+                <% } else { %>
+                <span class="labtm-text-muted">—</span>
+                <% } %>
+              </td>
+              <td class="labtm-text-sm labtm-text-muted labtm-font-mono">
+                <% if (item.reference_low !== null) { %>
+                  <%= parseFloat(item.reference_low) %> – <%= parseFloat(item.reference_high) %> <%= item.unit %>
+                <% } else { %>—<% } %>
+              </td>
+              <td>
+                <% if (item.result_id) { %>
+                  <%- include('../partials/result-flag', { flag: item.flag }) %>
+                <% } else { %>
+                <span class="labtm-text-muted labtm-text-xs">Awaiting</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (item.verified) { %>
+                <span class="labtm-verified-badge">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  Verified
+                </span>
+                <% } else if (item.result_id) { %>
+                <span class="labtm-status labtm-status-in_progress">Pending verification</span>
+                <% } else { %>
+                <span class="labtm-text-muted labtm-text-xs">No result</span>
+                <% } %>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+.labtm-result-highlight td { background: var(--labtm-abnormal-high-bg) !important; }
+</style>
+
+<%- include('../partials/footer') %>

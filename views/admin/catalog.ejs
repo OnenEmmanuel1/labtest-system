@@ -1,0 +1,94 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/catalog' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Test Catalog' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Test Catalog</h1>
+        <p>Manage all laboratory tests, reference ranges, and pricing.</p>
+      </div>
+      <div class="labtm-page-header-actions">
+        <a href="/admin/catalog/new" class="labtm-btn labtm-btn-primary">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Test
+        </a>
+      </div>
+    </div>
+
+    <!-- Filter by department -->
+    <% const depts = [...new Set(tests.map(t => t.department_name))]; %>
+
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">All Tests</div>
+          <div class="labtm-card-subtitle"><%= tests.length %> tests across <%= depts.length %> departments</div>
+        </div>
+      </div>
+
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Department</th>
+              <th>Reference Range</th>
+              <th>Unit</th>
+              <th>Price</th>
+              <th>TAT (hrs)</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!tests.length) { %>
+            <tr><td colspan="8" class="labtm-table-empty">No tests in catalog. Add one to get started.</td></tr>
+            <% } %>
+            <% for (const t of tests) { %>
+            <tr>
+              <td>
+                <div class="labtm-font-semibold"><%= t.test_name %></div>
+                <% if (t.description) { %>
+                <div class="labtm-text-xs labtm-text-muted" style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="<%= t.description %>"><%= t.description %></div>
+                <% } %>
+              </td>
+              <td>
+                <span class="labtm-tag"><%= t.department_name %></span>
+              </td>
+              <td class="labtm-text-sm labtm-font-mono">
+                <% if (t.reference_low !== null && t.reference_high !== null) { %>
+                  <%= parseFloat(t.reference_low) %> – <%= parseFloat(t.reference_high) %>
+                <% } else { %>
+                  <span class="labtm-text-muted">Not set</span>
+                <% } %>
+              </td>
+              <td class="labtm-text-sm"><%= t.unit || '—' %></td>
+              <td class="labtm-text-sm">₦<%= parseFloat(t.price).toLocaleString('en-NG', {minimumFractionDigits:2}) %></td>
+              <td class="labtm-text-sm labtm-text-muted"><%= t.turnaround_time_hours %>h</td>
+              <td>
+                <span class="labtm-status <%= t.is_active ? 'labtm-status-completed' : 'labtm-status-cancelled' %>">
+                  <%= t.is_active ? 'Active' : 'Inactive' %>
+                </span>
+              </td>
+              <td>
+                <div class="labtm-flex labtm-flex-gap-2">
+                  <a href="/admin/catalog/<%= t.id %>/edit" class="labtm-btn labtm-btn-outline labtm-btn-sm">Edit</a>
+                  <form method="POST" action="/admin/catalog/<%= t.id %>/delete" onsubmit="return confirm('Deactivate this test?')">
+                    <button class="labtm-btn labtm-btn-ghost labtm-btn-sm" style="color:var(--labtm-abnormal-high)">Deactivate</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

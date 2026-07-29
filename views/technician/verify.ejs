@@ -1,0 +1,125 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/technician/verify' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Verify Results' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Verify Results</h1>
+        <p>Review and verify entered results. Verification permanently locks the result.</p>
+      </div>
+    </div>
+
+    <div class="labtm-alert labtm-alert-danger labtm-mb-6">
+      <div>
+        <strong>⚠ Irreversible Action:</strong>
+        Clicking <em>Verify & Lock</em> permanently locks the result.
+        Verified results <strong>cannot be edited or deleted</strong> at any time.
+        Ensure the value is correct before verifying.
+      </div>
+    </div>
+
+    <% if (!results.length) { %>
+    <div class="labtm-card">
+      <div class="labtm-empty">
+        <div class="labtm-empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <h3>All caught up!</h3>
+        <p>No results awaiting verification.</p>
+      </div>
+    </div>
+    <% } %>
+
+    <% for (const r of results) { %>
+    <%
+      const isHigh = r.flag === 'abnormal_high';
+      const isLow  = r.flag === 'abnormal_low';
+      const isAbnormal = isHigh || isLow;
+    %>
+    <div class="labtm-card labtm-mb-4">
+      <div class="labtm-flex-between labtm-mb-4">
+        <div>
+          <div class="labtm-flex labtm-flex-gap-3">
+            <span class="labtm-font-bold" style="font-size:var(--labtm-fs-md)"><%= r.test_name %></span>
+            <%- include('../partials/result-flag', { flag: r.flag }) %>
+          </div>
+          <div class="labtm-text-sm labtm-text-muted labtm-mt-2">
+            Patient: <strong><%= r.patient_name %></strong> (<%= r.patient_unique_id %>)
+            &nbsp;·&nbsp;
+            Sample: <code class="labtm-code"><%= r.sample_code %></code>
+            &nbsp;·&nbsp;
+            Entered by: <%= r.entered_by_name %>
+          </div>
+        </div>
+        <div class="labtm-text-xs labtm-text-muted">
+          Order: <strong><%= r.order_number %></strong>
+        </div>
+      </div>
+
+      <!-- Result display — UNMISTAKABLE for abnormal -->
+      <div class="labtm-result-alert <%= r.flag || 'normal' %>">
+        <div class="labtm-result-alert-icon">
+          <% if (isAbnormal) { %>
+          <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <% } else { %>
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          <% } %>
+        </div>
+        <div>
+          <div class="labtm-result-alert-label">
+            <%= r.test_name %>
+            <% if (isHigh)    { %> — ABOVE UPPER REFERENCE LIMIT<% } %>
+            <% if (isLow)     { %> — BELOW LOWER REFERENCE LIMIT<% } %>
+            <% if (!isAbnormal) { %> — Within Reference Range<% } %>
+          </div>
+          <div class="labtm-result-alert-value">
+            <%= r.result_value %> <%= r.unit || '' %>
+          </div>
+          <% if (r.reference_low !== null) { %>
+          <div class="labtm-result-alert-ref">
+            Reference Range: <%= parseFloat(r.reference_low) %> – <%= parseFloat(r.reference_high) %> <%= r.unit %>
+          </div>
+          <% } %>
+          <div class="labtm-result-alert-ref labtm-mt-2">
+            Collected: <%= new Date(r.collected_at).toLocaleString('en-GB') %>
+            &nbsp;·&nbsp;
+            Entered: <%= new Date(r.entered_at).toLocaleString('en-GB') %>
+          </div>
+        </div>
+      </div>
+
+      <% if (r.notes) { %>
+      <div class="labtm-mt-4 labtm-text-sm labtm-text-muted"><strong>Notes:</strong> <%= r.notes %></div>
+      <% } %>
+
+      <!-- Verification form -->
+      <form method="POST" action="/technician/verify/<%= r.result_id %>" class="labtm-mt-5">
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="notes_<%= r.result_id %>">Verification Notes (optional)</label>
+          <textarea class="labtm-textarea" id="notes_<%= r.result_id %>" name="notes"
+                    placeholder="Reviewer comments, QC pass confirmation…"
+                    style="max-width:500px;min-height:60px"></textarea>
+        </div>
+        <div class="labtm-flex labtm-flex-gap-3">
+          <button type="submit"
+                  class="labtm-btn labtm-btn-accent"
+                  onclick="return confirm('Verify and permanently lock this result? This cannot be undone.')">
+            <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            Verify & Lock Result
+          </button>
+          <a href="/technician/results/<%= r.order_item_id %>/enter"
+             class="labtm-btn labtm-btn-outline labtm-btn-sm">
+            Edit Before Verifying
+          </a>
+        </div>
+      </form>
+    </div>
+    <% } %>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

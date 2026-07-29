@@ -1,0 +1,67 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/technician/orders' }) %>
+<%- include('../partials/navbar', { pageTitle: 'All Orders' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>All Orders</h1>
+        <p>System-wide order overview for lab operations.</p>
+      </div>
+    </div>
+
+    <div class="labtm-card">
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Patient</th>
+              <th>Sample Code</th>
+              <th>Progress</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!orders.length) { %>
+            <tr><td colspan="6" class="labtm-table-empty">No orders found.</td></tr>
+            <% } %>
+            <% for (const o of orders) { %>
+            <tr>
+              <td><strong class="labtm-font-mono"><%= o.order_number %></strong></td>
+              <td>
+                <div class="labtm-font-semibold"><%= o.patient_name %></div>
+                <div class="labtm-text-xs labtm-text-muted"><%= o.patient_unique_id %></div>
+              </td>
+              <td>
+                <% if (o.sample_code) { %>
+                <code class="labtm-code"><%= o.sample_code %></code>
+                <% } else { %>
+                <span class="labtm-text-muted labtm-text-xs">Not collected</span>
+                <% } %>
+              </td>
+              <td class="labtm-text-sm">
+                <span class="labtm-font-semibold"><%= o.verified_count || 0 %></span>/<%= o.item_count %> verified
+              </td>
+              <td>
+                <span class="labtm-status labtm-status-<%= o.status %>">
+                  <%= o.status.replace(/_/g, ' ') %>
+                </span>
+              </td>
+              <td class="labtm-text-sm labtm-text-muted">
+                <%= new Date(o.order_date).toLocaleDateString('en-GB') %>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,204 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/analytics' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Analytics & Reports' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Analytics & Reports</h1>
+        <p>Laboratory performance metrics, turnaround times, and abnormal result rates.</p>
+      </div>
+      <div class="labtm-page-header-actions">
+        <a href="/admin/analytics/export?type=tat" class="labtm-btn labtm-btn-outline labtm-btn-sm">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export TAT CSV
+        </a>
+        <a href="/admin/analytics/export?type=abnormal" class="labtm-btn labtm-btn-outline labtm-btn-sm">
+          Export Abnormal CSV
+        </a>
+        <a href="/admin/analytics/export?type=volume&start=<%= startDate %>&end=<%= endDate %>" class="labtm-btn labtm-btn-outline labtm-btn-sm">
+          Export Volume CSV
+        </a>
+        <a href="/admin/analytics/export?type=dept&start=<%= startDate %>&end=<%= endDate %>" class="labtm-btn labtm-btn-outline labtm-btn-sm">
+          Export Dept CSV
+        </a>
+      </div>
+    </div>
+
+    <!-- Summary stats -->
+    <div class="labtm-stats-grid">
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Total Patients</div>
+        <div class="labtm-stat-card-value"><%= stats.total_patients %></div>
+        <div class="labtm-stat-card-sub">Registered</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Total Orders</div>
+        <div class="labtm-stat-card-value"><%= stats.total_orders %></div>
+        <div class="labtm-stat-card-sub"><%= stats.complete_orders %> completed</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Flagged Abnormal</div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-abnormal-high)"><%= stats.flagged_results %></div>
+        <div class="labtm-stat-card-sub">Verified results</div>
+      </div>
+      <div class="labtm-stat-card">
+        <div class="labtm-stat-card-label">Awaiting Verification</div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-status-in_progress)"><%= stats.awaiting_verification %></div>
+        <div class="labtm-stat-card-sub">Pending review</div>
+      </div>
+    </div>
+
+    <!-- Date range filter -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-title labtm-mb-4">Date Range Filter</div>
+      <form method="GET" action="/admin/analytics" class="labtm-flex labtm-flex-gap-3 labtm-flex-wrap">
+        <div class="labtm-form-group" style="margin:0">
+          <label class="labtm-label">From</label>
+          <input class="labtm-input" type="date" name="start" value="<%= startDate %>" />
+        </div>
+        <div class="labtm-form-group" style="margin:0">
+          <label class="labtm-label">To</label>
+          <input class="labtm-input" type="date" name="end" value="<%= endDate %>" />
+        </div>
+        <div style="align-self:flex-end">
+          <button type="submit" class="labtm-btn labtm-btn-primary">Apply</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Turnaround Time by Test -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Average Turnaround Time by Test</div>
+          <div class="labtm-card-subtitle">Verified results only</div>
+        </div>
+        <a href="/admin/analytics/export?type=tat" class="labtm-btn labtm-btn-outline labtm-btn-sm">CSV</a>
+      </div>
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Department</th>
+              <th>Target (hrs)</th>
+              <th>Avg Actual (hrs)</th>
+              <th>Within Target</th>
+              <th>Total Verified</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!tatData.length) { %>
+            <tr><td colspan="6" class="labtm-table-empty">No verified results yet.</td></tr>
+            <% } %>
+            <% for (const t of tatData) { %>
+            <% const onTime = t.within_target >= t.total_verified * 0.8; %>
+            <tr>
+              <td class="labtm-font-semibold"><%= t.test_name %></td>
+              <td><span class="labtm-tag"><%= t.department %></span></td>
+              <td class="labtm-text-sm labtm-text-muted"><%= t.target_hours %>h</td>
+              <td>
+                <strong style="color:<%= t.avg_hours > t.target_hours ? 'var(--labtm-abnormal-high)' : 'var(--labtm-normal)' %>">
+                  <%= t.avg_hours !== null ? t.avg_hours + 'h' : '—' %>
+                </strong>
+              </td>
+              <td>
+                <% if (t.total_verified > 0) { %>
+                <span class="labtm-status <%= onTime ? 'labtm-status-completed' : 'labtm-status-in_progress' %>">
+                  <%= t.within_target %>/<%= t.total_verified %>
+                </span>
+                <% } else { %><span class="labtm-text-muted">—</span><% } %>
+              </td>
+              <td class="labtm-text-sm"><%= t.total_verified %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Abnormal Rate by Test -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Out-of-Range Rate by Test</div>
+          <div class="labtm-card-subtitle">Verified results with numeric reference ranges</div>
+        </div>
+        <a href="/admin/analytics/export?type=abnormal" class="labtm-btn labtm-btn-outline labtm-btn-sm">CSV</a>
+      </div>
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Test Name</th>
+              <th>Department</th>
+              <th>Total</th>
+              <th>Normal</th>
+              <th>High ↑</th>
+              <th>Low ↓</th>
+              <th>Abnormal %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!abnormalData.length) { %>
+            <tr><td colspan="7" class="labtm-table-empty">No verified results yet.</td></tr>
+            <% } %>
+            <% for (const a of abnormalData) { %>
+            <tr>
+              <td class="labtm-font-semibold"><%= a.test_name %></td>
+              <td><span class="labtm-tag"><%= a.department %></span></td>
+              <td><%= a.total_results %></td>
+              <td style="color:var(--labtm-normal);font-weight:600"><%= a.normal_count %></td>
+              <td style="color:var(--labtm-abnormal-high);font-weight:600"><%= a.high_count %></td>
+              <td style="color:var(--labtm-abnormal-low);font-weight:600"><%= a.low_count %></td>
+              <td>
+                <strong style="color:<%= a.abnormal_pct > 20 ? 'var(--labtm-abnormal-high)' : 'var(--labtm-text-primary)' %>">
+                  <%= a.abnormal_pct %>%
+                </strong>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Volume by Department -->
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Volume by Department</div>
+          <div class="labtm-card-subtitle"><%= startDate %> to <%= endDate %></div>
+        </div>
+        <a href="/admin/analytics/export?type=dept&start=<%= startDate %>&end=<%= endDate %>" class="labtm-btn labtm-btn-outline labtm-btn-sm">CSV</a>
+      </div>
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr><th>Department</th><th>Orders</th><th>Tests</th><th>Verified</th></tr>
+          </thead>
+          <tbody>
+            <% if (!deptData.length) { %>
+            <tr><td colspan="4" class="labtm-table-empty">No data for this period.</td></tr>
+            <% } %>
+            <% for (const d of deptData) { %>
+            <tr>
+              <td class="labtm-font-semibold"><%= d.department %></td>
+              <td><%= d.order_count %></td>
+              <td><%= d.test_count %></td>
+              <td style="color:var(--labtm-normal);font-weight:600"><%= d.verified_count %></td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

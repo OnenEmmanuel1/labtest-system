@@ -1,0 +1,37 @@
+{
+  "name": "labtm",
+  "version": "1.0.0",
+  "description": "LabTrackMS — Web-Based Laboratory Test Management System",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "dev:node": "node app.js",
+    "db:setup": "node scripts/setup-db.js"
+  },
+  "keywords": [
+    "lab",
+    "lims",
+    "healthcare",
+    "nodejs",
+    "express",
+    "ejs"
+  ],
+  "author": "LabTrackMS",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "type": "commonjs",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^17.4.2",
+    "ejs": "^6.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.2",
+    "multer": "^2.2.0",
+    "mysql2": "^3.23.1"
+  }
+}

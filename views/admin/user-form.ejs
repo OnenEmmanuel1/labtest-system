@@ -1,0 +1,88 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/users' }) %>
+<%- include('../partials/navbar', { pageTitle: editUser ? 'Edit User' : 'Add User' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-breadcrumb">
+      <a href="/admin/users">Users</a>
+      <span class="labtm-breadcrumb-sep">/</span>
+      <span><%= editUser ? 'Edit ' + editUser.name : 'Add New User' %></span>
+    </div>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1><%= editUser ? 'Edit User' : 'Add New User' %></h1>
+      </div>
+    </div>
+
+    <div class="labtm-card" style="max-width:560px">
+      <form method="POST" action="<%= editUser ? `/admin/users/${editUser.id}/edit` : '/admin/users' %>">
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="name">Full Name <span class="required">*</span></label>
+          <input class="labtm-input" type="text" id="name" name="name"
+                 value="<%= editUser ? editUser.name : '' %>" required placeholder="Dr. Jane Smith" />
+        </div>
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="email">Email <span class="required">*</span></label>
+          <input class="labtm-input" type="email" id="email" name="email"
+                 value="<%= editUser ? editUser.email : '' %>" required placeholder="jane@labtm.com" />
+        </div>
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="role">Role <span class="required">*</span></label>
+          <select class="labtm-select" id="role" name="role" required onchange="toggleSpecialty(this.value)">
+            <option value="">Select role…</option>
+            <option value="admin"      <%= editUser && editUser.role === 'admin'      ? 'selected' : '' %>>Administrator</option>
+            <option value="doctor"     <%= editUser && editUser.role === 'doctor'     ? 'selected' : '' %>>Doctor</option>
+            <option value="technician" <%= editUser && editUser.role === 'technician' ? 'selected' : '' %>>Lab Technician</option>
+          </select>
+        </div>
+
+        <!-- Specialty — shown only for doctor role -->
+        <div class="labtm-form-group" id="specialtyGroup" style="display:<%= editUser && editUser.role === 'doctor' ? 'block' : 'none' %>">
+          <label class="labtm-label" for="specialty">Specialty</label>
+          <input class="labtm-input" type="text" id="specialty" name="specialty"
+                 value="<%= editUser ? editUser.specialty || '' : '' %>" placeholder="e.g. Internal Medicine" />
+        </div>
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="password">
+            Password <%= editUser ? '' : '<span class="required">*</span>' %>
+          </label>
+          <input class="labtm-input" type="password" id="password" name="password"
+                 placeholder="<%= editUser ? 'Leave blank to keep current password' : 'Minimum 8 characters' %>"
+                 <%= editUser ? '' : 'required' %> />
+        </div>
+
+        <% if (editUser) { %>
+        <div class="labtm-form-group">
+          <label class="labtm-label labtm-flex labtm-flex-gap-2" style="cursor:pointer">
+            <input type="checkbox" name="is_active" value="1" <%= editUser.is_active ? 'checked' : '' %> />
+            Account Active
+          </label>
+        </div>
+        <% } %>
+
+        <div class="labtm-flex labtm-flex-gap-3 labtm-mt-4">
+          <button type="submit" class="labtm-btn labtm-btn-primary">
+            <%= editUser ? 'Save Changes' : 'Create User' %>
+          </button>
+          <a href="/admin/users" class="labtm-btn labtm-btn-ghost">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script>
+function toggleSpecialty(role) {
+  document.getElementById('specialtyGroup').style.display = role === 'doctor' ? 'block' : 'none';
+}
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,11 @@
+<%
+// Renders a flag badge. Usage: <%- include('../partials/result-flag', { flag: item.flag }) %>
+const flagLabel = {
+  normal:        '✓ Normal',
+  abnormal_high: '↑ High',
+  abnormal_low:  '↓ Low',
+};
+const label = flag ? (flagLabel[flag] || flag) : '—';
+const cls   = flag ? `labtm-flag labtm-flag-${flag}` : 'labtm-text-muted';
+%>
+<span class="<%= cls %>"><%= label %></span>

@@ -1,0 +1,105 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/technician/collect' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Collect Sample' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-breadcrumb">
+      <a href="/technician/collect">Sample Collection</a>
+      <span class="labtm-breadcrumb-sep">/</span>
+      <span><%= order.order_number %></span>
+    </div>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Collect Sample</h1>
+        <p>Order: <strong><%= order.order_number %></strong></p>
+      </div>
+    </div>
+
+    <!-- Patient info -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-title labtm-mb-4">Patient Information</div>
+      <div class="labtm-detail-grid">
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Patient</div>
+          <div class="labtm-detail-value labtm-font-bold"><%= order.patient_name %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Patient ID</div>
+          <div class="labtm-detail-value"><code class="labtm-code"><%= order.patient_unique_id %></code></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">DOB</div>
+          <div class="labtm-detail-value"><%= new Date(order.date_of_birth).toLocaleDateString('en-GB') %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Gender</div>
+          <div class="labtm-detail-value" style="text-transform:capitalize"><%= order.gender %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Requesting Doctor</div>
+          <div class="labtm-detail-value">Dr. <%= order.doctor_name %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Phone</div>
+          <div class="labtm-detail-value"><%= order.phone || '—' %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tests requested -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-title labtm-mb-4">Tests Requested</div>
+      <ul style="display:flex;flex-wrap:wrap;gap:var(--labtm-space-2)">
+        <% for (const item of items) { %>
+        <li class="labtm-tag"><%= item.test_name %></li>
+        <% } %>
+      </ul>
+    </div>
+
+    <!-- Collection form -->
+    <div class="labtm-card" style="max-width:520px">
+      <div class="labtm-card-title labtm-mb-4">Sample Details</div>
+      <form method="POST" action="/technician/collect/<%= order.id %>">
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="sample_type">Sample Type <span class="required">*</span></label>
+          <select class="labtm-select" name="sample_type" id="sample_type" required>
+            <option value="Blood" selected>Blood</option>
+            <option value="Serum">Serum</option>
+            <option value="Urine">Urine</option>
+            <option value="Stool">Stool</option>
+            <option value="Swab">Swab</option>
+            <option value="CSF">Cerebrospinal Fluid (CSF)</option>
+            <option value="Sputum">Sputum</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="notes">Collection Notes</label>
+          <textarea class="labtm-textarea" name="notes" id="notes"
+                    placeholder="Any notes about sample quality, collection site, etc."></textarea>
+        </div>
+
+        <div class="labtm-alert labtm-alert-info labtm-mb-4">
+          A unique sample code will be automatically generated upon submission.
+          The order status will change to <strong>Sample Collected</strong>.
+        </div>
+
+        <div class="labtm-flex labtm-flex-gap-3">
+          <button type="submit" class="labtm-btn labtm-btn-accent labtm-btn-lg">
+            <svg viewBox="0 0 24 24"><path d="M10 2v7"/><path d="M14 9V2"/><path d="M8 2h8"/><path d="M14 9a6.5 6.5 0 11-4 0"/></svg>
+            Confirm Collection
+          </button>
+          <a href="/technician/collect" class="labtm-btn labtm-btn-ghost labtm-btn-lg">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

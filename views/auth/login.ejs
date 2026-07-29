@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Sign in to LabTrackMS — Clinical Laboratory Test Management System" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/labtm.css" />
+  <link rel="icon" type="image/svg+xml" href="/images/favicon.svg" />
+</head>
+<body>
+<div class="labtm-login-page">
+  <div class="labtm-login-card">
+
+    <!-- Logo / Brand -->
+    <div class="labtm-login-logo">
+      <div class="labtm-login-logo-mark">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2v7" stroke-linecap="round"/>
+          <path d="M14 9V2" stroke-linecap="round"/>
+          <path d="M8 2h8" stroke-linecap="round"/>
+          <path d="M14 9a6.5 6.5 0 11-4 0" stroke-linecap="round"/>
+          <line x1="9" y1="14" x2="15" y2="14" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h1 class="labtm-login-title">LabTrackMS</h1>
+      <p class="labtm-login-sub">Laboratory Test Management System</p>
+    </div>
+
+    <hr class="labtm-login-divider" />
+
+    <%- include('../partials/flash') %>
+
+    <!-- Sign-in form -->
+    <form method="POST" action="/auth/login" id="loginForm" autocomplete="on">
+
+      <div class="labtm-form-group">
+        <label class="labtm-label" for="email">
+          Email Address <span class="required">*</span>
+        </label>
+        <input
+          class="labtm-input"
+          type="email"
+          id="email"
+          name="email"
+          placeholder="you@labtm.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="labtm-form-group">
+        <label class="labtm-label" for="password">
+          Password <span class="required">*</span>
+        </label>
+        <input
+          class="labtm-input"
+          type="password"
+          id="password"
+          name="password"
+          placeholder="••••••••"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button type="submit" class="labtm-btn labtm-btn-primary labtm-w-full labtm-btn-lg" id="loginBtn">
+        <svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Sign In
+      </button>
+    </form>
+
+    <hr class="labtm-login-divider" />
+
+    <!-- Dev credentials hint -->
+    <div style="font-size:11px; color: var(--labtm-text-muted); text-align:center; line-height:1.8;">
+      <strong style="color:var(--labtm-text-secondary);">Test Credentials (Password: Password@123)</strong><br/>
+      <code style="background:var(--labtm-bg-alt);padding:1px 5px;border-radius:3px;font-size:10px;">admin@labtm.com</code> — Administrator<br/>
+      <code style="background:var(--labtm-bg-alt);padding:1px 5px;border-radius:3px;font-size:10px;">doctor1@labtm.com</code> — Doctor<br/>
+      <code style="background:var(--labtm-bg-alt);padding:1px 5px;border-radius:3px;font-size:10px;">tech1@labtm.com</code> — Technician
+    </div>
+
+  </div>
+</div>
+<script src="/js/labtm.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<div class="labtm-error-page">
+  <div class="labtm-error-card">
+    <div class="labtm-error-code"><%= title.split(' ')[0] %></div>
+    <h2 style="font-size:var(--labtm-fs-xl);font-weight:700;margin:var(--labtm-space-4) 0 var(--labtm-space-3);">
+      <%= title.split('—')[1] ? title.split('—')[1].trim() : title %>
+    </h2>
+    <p style="color:var(--labtm-text-muted);margin-bottom:var(--labtm-space-6);font-size:var(--labtm-fs-base);">
+      <%= message %>
+    </p>
+    <% if (user) { %>
+    <a href="/" class="labtm-btn labtm-btn-primary">Back to Dashboard</a>
+    <% } else { %>
+    <a href="/auth/login" class="labtm-btn labtm-btn-primary">Back to Login</a>
+    <% } %>
+  </div>
+</div>

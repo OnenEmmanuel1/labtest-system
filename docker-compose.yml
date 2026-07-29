@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  # ── MySQL Database ────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: labtm_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password_change_me
+      MYSQL_DATABASE:      labtm_db
+      MYSQL_USER:          labtm_user
+      MYSQL_PASSWORD:      labtm_pass_2024
+    ports:
+      - "3306:3306"
+    volumes:
+      - labtm_mysql_data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "labtm_user", "-plabtm_pass_2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ── Node.js Application ───────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: labtm_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_HOST:     db
+      DB_PORT:     "3306"
+      DB_USER:     labtm_user
+      DB_PASSWORD: labtm_pass_2024
+      DB_NAME:     labtm_db
+    ports:
+      - "${PORT:-3000}:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./public:/app/public:ro
+
+volumes:
+  labtm_mysql_data:

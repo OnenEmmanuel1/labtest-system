@@ -1,0 +1,101 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/doctor/patients' }) %>
+<%- include('../partials/navbar', { pageTitle: patient ? 'Edit Patient' : 'Register Patient' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-breadcrumb">
+      <a href="/doctor/patients">Patients</a>
+      <span class="labtm-breadcrumb-sep">/</span>
+      <span>Register Patient</span>
+    </div>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Register New Patient</h1>
+        <p>Fill in the patient's demographic information.</p>
+      </div>
+    </div>
+
+    <!-- Duplicate warning -->
+    <% if (typeof duplicates !== 'undefined' && duplicates.length) { %>
+    <div class="labtm-alert labtm-alert-warning labtm-mb-6">
+      <div>
+        <strong>Possible Duplicate Detected</strong>
+        <p class="labtm-mt-2">The following patients may already be registered:</p>
+        <ul style="margin-top:var(--labtm-space-3);padding-left:0">
+          <% for (const d of duplicates) { %>
+          <li style="margin-bottom:var(--labtm-space-2);">
+            <strong><%= d.name %></strong> — <code class="labtm-code"><%= d.patient_unique_id %></code>
+            — DOB: <%= new Date(d.date_of_birth).toLocaleDateString('en-GB') %>
+            — Phone: <%= d.phone || '—' %>
+          </li>
+          <% } %>
+        </ul>
+        <p class="labtm-mt-3" style="font-size:var(--labtm-fs-sm)">
+          If this is a different patient, submit the form with the "Confirm & Register" button.
+        </p>
+      </div>
+    </div>
+    <% } %>
+
+    <div class="labtm-card" style="max-width:660px">
+      <form method="POST" action="/doctor/patients">
+
+        <% if (typeof duplicates !== 'undefined' && duplicates.length) { %>
+        <input type="hidden" name="force" value="1" />
+        <% } %>
+
+        <div class="labtm-form-row">
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="name">Full Name <span class="required">*</span></label>
+            <input class="labtm-input" type="text" id="name" name="name"
+                   value="<%= prefill ? prefill.name || '' : '' %>" required placeholder="Aisha Bello" />
+          </div>
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="date_of_birth">Date of Birth <span class="required">*</span></label>
+            <input class="labtm-input" type="date" id="date_of_birth" name="date_of_birth"
+                   value="<%= prefill ? prefill.date_of_birth || '' : '' %>" required />
+          </div>
+        </div>
+
+        <div class="labtm-form-row">
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="gender">Gender <span class="required">*</span></label>
+            <select class="labtm-select" id="gender" name="gender" required>
+              <option value="">Select…</option>
+              <option value="male"   <%= prefill && prefill.gender === 'male'   ? 'selected' : '' %>>Male</option>
+              <option value="female" <%= prefill && prefill.gender === 'female' ? 'selected' : '' %>>Female</option>
+              <option value="other"  <%= prefill && prefill.gender === 'other'  ? 'selected' : '' %>>Other</option>
+            </select>
+          </div>
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="phone">Phone Number</label>
+            <input class="labtm-input" type="tel" id="phone" name="phone"
+                   value="<%= prefill ? prefill.phone || '' : '' %>" placeholder="080XXXXXXXX" />
+          </div>
+        </div>
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="address">Address</label>
+          <textarea class="labtm-textarea" id="address" name="address" placeholder="Street address, city…"><%= prefill ? prefill.address || '' : '' %></textarea>
+        </div>
+
+        <div class="labtm-flex labtm-flex-gap-3 labtm-mt-4">
+          <button type="submit" class="labtm-btn labtm-btn-primary">
+            <% if (typeof duplicates !== 'undefined' && duplicates.length) { %>
+              Confirm & Register Anyway
+            <% } else { %>
+              Register Patient
+            <% } %>
+          </button>
+          <a href="/doctor/patients" class="labtm-btn labtm-btn-ghost">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

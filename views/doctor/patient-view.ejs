@@ -1,0 +1,102 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/doctor/patients' }) %>
+<%- include('../partials/navbar', { pageTitle: patient.name }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-breadcrumb">
+      <a href="/doctor/patients">Patients</a>
+      <span class="labtm-breadcrumb-sep">/</span>
+      <span><%= patient.name %></span>
+    </div>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1><%= patient.name %></h1>
+        <p>Patient record — <code class="labtm-code"><%= patient.patient_unique_id %></code></p>
+      </div>
+      <a href="/doctor/orders/new?patient_id=<%= patient.id %>" class="labtm-btn labtm-btn-primary">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Order
+      </a>
+    </div>
+
+    <!-- Patient details -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-title labtm-mb-4">Patient Information</div>
+      <div class="labtm-detail-grid">
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Patient ID</div>
+          <div class="labtm-detail-value"><code class="labtm-code"><%= patient.patient_unique_id %></code></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Date of Birth</div>
+          <div class="labtm-detail-value"><%= new Date(patient.date_of_birth).toLocaleDateString('en-GB') %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Gender</div>
+          <div class="labtm-detail-value" style="text-transform:capitalize"><%= patient.gender %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Phone</div>
+          <div class="labtm-detail-value"><%= patient.phone || '—' %></div>
+        </div>
+        <div class="labtm-detail-item" style="grid-column: span 2">
+          <div class="labtm-detail-label">Address</div>
+          <div class="labtm-detail-value"><%= patient.address || '—' %></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Orders history -->
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div class="labtm-card-title">Test Orders History</div>
+      </div>
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Tests</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!orders.length) { %>
+            <tr><td colspan="5" class="labtm-table-empty">No orders for this patient. <a href="/doctor/orders/new?patient_id=<%= patient.id %>">Create one →</a></td></tr>
+            <% } %>
+            <% for (const o of orders) { %>
+            <tr>
+              <td><strong class="labtm-font-mono"><%= o.order_number %></strong></td>
+              <td class="labtm-text-sm">
+                <span class="labtm-font-semibold"><%= o.verified_count || 0 %></span>/<%= o.item_count %> verified
+              </td>
+              <td>
+                <span class="labtm-status labtm-status-<%= o.status %>">
+                  <%= o.status.replace(/_/g, ' ') %>
+                </span>
+              </td>
+              <td class="labtm-text-sm labtm-text-muted"><%= new Date(o.order_date).toLocaleDateString('en-GB') %></td>
+              <td>
+                <div class="labtm-flex labtm-flex-gap-2">
+                  <a href="/doctor/orders/<%= o.id %>" class="labtm-btn labtm-btn-outline labtm-btn-sm">View</a>
+                  <% if (o.status === 'completed') { %>
+                  <a href="/doctor/report/<%= o.id %>" class="labtm-btn labtm-btn-accent labtm-btn-sm">Report</a>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

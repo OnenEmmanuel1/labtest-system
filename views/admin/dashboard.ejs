@@ -1,0 +1,161 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/dashboard' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Admin Dashboard' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Dashboard</h1>
+        <p>Welcome back, <%= user.name %>. System overview for LabTrackMS.</p>
+      </div>
+      <div class="labtm-page-header-actions">
+        <a href="/admin/analytics" class="labtm-btn labtm-btn-outline">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Analytics
+        </a>
+        <a href="/admin/catalog/new" class="labtm-btn labtm-btn-primary">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Test
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="labtm-stats-grid">
+      <div class="labtm-stat-card">
+        <div class="labtm-flex-between">
+          <span class="labtm-stat-card-label">Total Patients</span>
+          <div class="labtm-stat-card-icon" style="background:var(--labtm-primary-muted);color:var(--labtm-primary-light)">
+            <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+        </div>
+        <div class="labtm-stat-card-value"><%= stats.total_patients %></div>
+        <div class="labtm-stat-card-sub">Registered patients</div>
+      </div>
+
+      <div class="labtm-stat-card">
+        <div class="labtm-flex-between">
+          <span class="labtm-stat-card-label">Total Orders</span>
+          <div class="labtm-stat-card-icon" style="background:var(--labtm-accent-light);color:var(--labtm-accent)">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+        </div>
+        <div class="labtm-stat-card-value"><%= stats.total_orders %></div>
+        <div class="labtm-stat-card-sub"><%= stats.pending_orders %> awaiting action</div>
+      </div>
+
+      <div class="labtm-stat-card">
+        <div class="labtm-flex-between">
+          <span class="labtm-stat-card-label">Awaiting Verification</span>
+          <div class="labtm-stat-card-icon" style="background:var(--labtm-status-in_progress-bg);color:var(--labtm-status-in_progress)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+        </div>
+        <div class="labtm-stat-card-value"><%= stats.awaiting_verification %></div>
+        <div class="labtm-stat-card-sub">Results to verify</div>
+      </div>
+
+      <div class="labtm-stat-card">
+        <div class="labtm-flex-between">
+          <span class="labtm-stat-card-label">Flagged Abnormal</span>
+          <div class="labtm-stat-card-icon" style="background:var(--labtm-abnormal-high-bg);color:var(--labtm-abnormal-high)">
+            <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+        </div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-abnormal-high)"><%= stats.flagged_results %></div>
+        <div class="labtm-stat-card-sub">Verified abnormal results</div>
+      </div>
+
+      <div class="labtm-stat-card">
+        <div class="labtm-flex-between">
+          <span class="labtm-stat-card-label">Completed Orders</span>
+          <div class="labtm-stat-card-icon" style="background:var(--labtm-normal-bg);color:var(--labtm-normal)">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+        </div>
+        <div class="labtm-stat-card-value" style="color:var(--labtm-normal)"><%= stats.complete_orders %></div>
+        <div class="labtm-stat-card-sub">Fully verified orders</div>
+      </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">Recent Orders</div>
+          <div class="labtm-card-subtitle">Latest test orders across the system</div>
+        </div>
+        <a href="/admin/patients" class="labtm-btn labtm-btn-outline labtm-btn-sm">View Patients</a>
+      </div>
+
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!recentOrders.length) { %>
+            <tr><td colspan="6" class="labtm-table-empty">No orders yet.</td></tr>
+            <% } %>
+            <% for (const o of recentOrders) { %>
+            <tr>
+              <td><strong class="labtm-font-mono"><%= o.order_number %></strong></td>
+              <td>
+                <div class="labtm-font-semibold"><%= o.patient_name %></div>
+                <div class="labtm-text-xs labtm-text-muted"><%= o.patient_unique_id %></div>
+              </td>
+              <td class="labtm-text-sm"><%= o.doctor_name %></td>
+              <td>
+                <span class="labtm-status labtm-status-<%= o.status %>">
+                  <%= o.status.replace(/_/g, ' ') %>
+                </span>
+              </td>
+              <td class="labtm-text-sm labtm-text-muted">
+                <%= new Date(o.order_date).toLocaleDateString('en-GB') %>
+              </td>
+              <td>
+                <% if (o.status === 'completed') { %>
+                <a href="/admin/report/<%= o.id %>" class="labtm-btn labtm-btn-accent labtm-btn-sm">Report</a>
+                <% } %>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="labtm-mt-6" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:var(--labtm-space-4)">
+      <a href="/admin/departments" class="labtm-card" style="text-decoration:none;display:block;transition:transform var(--labtm-transition),box-shadow var(--labtm-transition);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div class="labtm-text-xs labtm-text-muted">Manage</div>
+        <div class="labtm-font-bold" style="font-size:var(--labtm-fs-md);margin-top:4px;color:var(--labtm-primary)">Departments →</div>
+      </a>
+      <a href="/admin/catalog" class="labtm-card" style="text-decoration:none;display:block;transition:transform var(--labtm-transition),box-shadow var(--labtm-transition);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div class="labtm-text-xs labtm-text-muted">Manage</div>
+        <div class="labtm-font-bold" style="font-size:var(--labtm-fs-md);margin-top:4px;color:var(--labtm-primary)">Test Catalog →</div>
+      </a>
+      <a href="/admin/users" class="labtm-card" style="text-decoration:none;display:block;transition:transform var(--labtm-transition),box-shadow var(--labtm-transition);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div class="labtm-text-xs labtm-text-muted">Manage</div>
+        <div class="labtm-font-bold" style="font-size:var(--labtm-fs-md);margin-top:4px;color:var(--labtm-primary)">Users & Roles →</div>
+      </a>
+      <a href="/admin/analytics" class="labtm-card" style="text-decoration:none;display:block;transition:transform var(--labtm-transition),box-shadow var(--labtm-transition);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div class="labtm-text-xs labtm-text-muted">View</div>
+        <div class="labtm-font-bold" style="font-size:var(--labtm-fs-md);margin-top:4px;color:var(--labtm-primary)">Analytics & Reports →</div>
+      </a>
+    </div>
+
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

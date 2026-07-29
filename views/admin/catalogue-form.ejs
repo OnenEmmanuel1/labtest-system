@@ -1,0 +1,103 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/catalogue' }) %>
+<%- include('../partials/navbar', { pageTitle: test ? 'Edit Test' : 'Add Test' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <div class="labtm-breadcrumb">
+      <a href="/admin/catalogue">Test Catalogue</a>
+      <span class="labtm-breadcrumb-sep">/</span>
+      <span><%= test ? 'Edit: ' + test.name : 'New Test' %></span>
+    </div>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1><%= test ? 'Edit Test' : 'Add New Test' %></h1>
+        <p><%= test ? 'Update test details, reference ranges, and pricing.' : 'Register a new diagnostic test in the catalogue.' %></p>
+      </div>
+    </div>
+
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-card" style="max-width:720px;">
+      <form method="POST" action="<%= test ? '/admin/catalogue/' + test.id + '/edit' : '/admin/catalogue' %>">
+        <div class="labtm-form-row">
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="name">Test Name <span class="required">*</span></label>
+            <input class="labtm-input" type="text" id="name" name="name"
+              value="<%= test ? test.name : '' %>" required placeholder="e.g. Full Blood Count" />
+          </div>
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="category">Category <span class="required">*</span></label>
+            <input class="labtm-input" type="text" id="category" name="category"
+              value="<%= test ? test.category : '' %>" required placeholder="e.g. Haematology" />
+          </div>
+        </div>
+
+        <div class="labtm-form-row">
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="unit">Unit of Measurement</label>
+            <input class="labtm-input" type="text" id="unit" name="unit"
+              value="<%= test ? (test.unit || '') : '' %>" placeholder="e.g. g/dL, mmol/L" />
+          </div>
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="price">Price (₦) <span class="required">*</span></label>
+            <input class="labtm-input" type="number" id="price" name="price" step="0.01" min="0"
+              value="<%= test ? test.price : '' %>" required placeholder="0.00" />
+          </div>
+        </div>
+
+        <div class="labtm-form-row">
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="reference_low">Reference Range — Low</label>
+            <input class="labtm-input" type="number" id="reference_low" name="reference_low" step="0.0001"
+              value="<%= test && test.reference_low !== null ? test.reference_low : '' %>"
+              placeholder="Lower bound (numeric)" />
+          </div>
+          <div class="labtm-form-group">
+            <label class="labtm-label" for="reference_high">Reference Range — High</label>
+            <input class="labtm-input" type="number" id="reference_high" name="reference_high" step="0.0001"
+              value="<%= test && test.reference_high !== null ? test.reference_high : '' %>"
+              placeholder="Upper bound (numeric)" />
+          </div>
+        </div>
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="turnaround_target_hours">
+            Turnaround Target (hours) <span class="required">*</span>
+          </label>
+          <input class="labtm-input" type="number" id="turnaround_target_hours"
+            name="turnaround_target_hours" min="1" max="9999"
+            value="<%= test ? test.turnaround_target_hours : 24 %>" required />
+          <div class="labtm-form-hint">Expected time from sample collection to validated result.</div>
+        </div>
+
+        <div class="labtm-form-group">
+          <label class="labtm-label" for="description">Description</label>
+          <textarea class="labtm-textarea" id="description" name="description"
+            placeholder="Brief description of this test..."><%= test ? (test.description || '') : '' %></textarea>
+        </div>
+
+        <% if (test) { %>
+        <div class="labtm-form-group">
+          <label class="labtm-flex-center labtm-gap-3" style="cursor:pointer;">
+            <input type="checkbox" name="is_active" value="1"
+              <%= test.is_active ? 'checked' : '' %>
+              style="width:18px;height:18px;accent-color:var(--labtm-primary);" />
+            <span class="labtm-text-sm labtm-font-semibold">Active (visible for ordering)</span>
+          </label>
+        </div>
+        <% } %>
+
+        <div class="labtm-flex labtm-gap-3">
+          <button type="submit" class="labtm-btn labtm-btn-primary">
+            <%= test ? 'Save Changes' : 'Add Test' %>
+          </button>
+          <a href="/admin/catalogue" class="labtm-btn labtm-btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

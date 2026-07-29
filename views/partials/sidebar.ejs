@@ -1,0 +1,142 @@
+<%
+const role        = user ? user.role : '';
+const currentPath = locals.currentPath || '';
+function isActive(path) {
+  return currentPath === path || currentPath.startsWith(path + '/') ? 'active' : '';
+}
+%>
+<aside class="labtm-sidebar" id="labtmSidebar">
+
+  <!-- Brand -->
+  <div class="labtm-sidebar-logo">
+    <div class="labtm-sidebar-logo-mark">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 2v7" stroke-linecap="round"/>
+        <path d="M14 9V1.5" stroke-linecap="round"/>
+        <path d="M8 2h8" stroke-linecap="round"/>
+        <path d="M14 9a6.5 6.5 0 11-4 0" stroke-linecap="round"/>
+        <line x1="9" y1="14" x2="15" y2="14" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div>
+      <div class="labtm-sidebar-logo-text">LabTrackMS</div>
+      <div class="labtm-sidebar-logo-sub">Lab Management</div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="labtm-sidebar-nav">
+
+    <!-- ── ADMIN ── -->
+    <% if (role === 'admin') { %>
+    <div class="labtm-sidebar-section">Overview</div>
+    <a href="/admin/dashboard" class="labtm-sidebar-link <%= isActive('/admin/dashboard') %>">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+
+    <div class="labtm-sidebar-section">Management</div>
+    <a href="/admin/departments" class="labtm-sidebar-link <%= isActive('/admin/departments') %>">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Departments
+    </a>
+    <a href="/admin/catalog" class="labtm-sidebar-link <%= isActive('/admin/catalog') %>">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      Test Catalog
+    </a>
+    <a href="/admin/users" class="labtm-sidebar-link <%= isActive('/admin/users') %>">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Users
+    </a>
+    <a href="/admin/patients" class="labtm-sidebar-link <%= isActive('/admin/patients') %>">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Patients
+    </a>
+
+    <div class="labtm-sidebar-section">Reports</div>
+    <a href="/admin/analytics" class="labtm-sidebar-link <%= isActive('/admin/analytics') %>">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Analytics & Reports
+    </a>
+    <% } %>
+
+    <!-- ── DOCTOR ── -->
+    <% if (role === 'doctor') { %>
+    <div class="labtm-sidebar-section">Overview</div>
+    <a href="/doctor/dashboard" class="labtm-sidebar-link <%= isActive('/doctor/dashboard') %>">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+
+    <div class="labtm-sidebar-section">Patients</div>
+    <a href="/doctor/patients/new" class="labtm-sidebar-link <%= isActive('/doctor/patients/new') %>">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="10" y1="5" x2="14" y2="5"/></svg>
+      Register Patient
+    </a>
+    <a href="/doctor/patients" class="labtm-sidebar-link <%= isActive('/doctor/patients') %>">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      All Patients
+    </a>
+
+    <div class="labtm-sidebar-section">Test Orders</div>
+    <a href="/doctor/orders/new" class="labtm-sidebar-link <%= isActive('/doctor/orders/new') %>">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      New Order
+    </a>
+    <a href="/doctor/orders" class="labtm-sidebar-link <%= isActive('/doctor/orders') %>">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      My Orders
+    </a>
+    <% } %>
+
+    <!-- ── TECHNICIAN ── -->
+    <% if (role === 'technician') { %>
+    <div class="labtm-sidebar-section">Overview</div>
+    <a href="/technician/dashboard" class="labtm-sidebar-link <%= isActive('/technician/dashboard') %>">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Lab Workbench
+    </a>
+
+    <div class="labtm-sidebar-section">Samples</div>
+    <a href="/technician/collect" class="labtm-sidebar-link <%= isActive('/technician/collect') %>">
+      <svg viewBox="0 0 24 24"><path d="M10 2v7"/><path d="M14 9V2"/><path d="M8 2h8"/><path d="M14 9a6.5 6.5 0 11-4 0"/></svg>
+      Collect Samples
+    </a>
+
+    <div class="labtm-sidebar-section">Results</div>
+    <a href="/technician/results" class="labtm-sidebar-link <%= isActive('/technician/results') %>">
+      <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Enter Results
+    </a>
+    <a href="/technician/verify" class="labtm-sidebar-link <%= isActive('/technician/verify') %>">
+      <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      Verify Results
+    </a>
+    <a href="/technician/orders" class="labtm-sidebar-link <%= isActive('/technician/orders') %>">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      All Orders
+    </a>
+    <% } %>
+
+    <!-- Shared -->
+    <div class="labtm-sidebar-section">Account</div>
+    <a href="/auth/logout" class="labtm-sidebar-link">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Logout
+    </a>
+  </nav>
+
+  <!-- User info footer -->
+  <div class="labtm-sidebar-footer">
+    <div class="labtm-sidebar-user">
+      <div class="labtm-sidebar-avatar">
+        <%= user ? user.name.charAt(0).toUpperCase() : '?' %>
+      </div>
+      <div class="labtm-sidebar-user-info">
+        <div class="labtm-sidebar-user-name"><%= user ? user.name : '' %></div>
+        <div class="labtm-sidebar-user-role"><%= user ? user.role : '' %></div>
+      </div>
+    </div>
+  </div>
+
+</aside>

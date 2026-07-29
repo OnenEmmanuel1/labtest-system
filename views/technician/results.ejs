@@ -1,0 +1,122 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/technician/results' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Result Entry' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Result Entry</h1>
+        <p>Enter laboratory results for collected samples. Verified results are permanently locked.</p>
+      </div>
+    </div>
+
+    <div class="labtm-card">
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>Test</th>
+              <th>Patient</th>
+              <th>Sample</th>
+              <th>Result</th>
+              <th>Flag</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!items.length) { %>
+            <tr><td colspan="7" class="labtm-table-empty">
+              No tests awaiting result entry.
+            </td></tr>
+            <% } %>
+            <% for (const item of items) { %>
+            <tr>
+              <td>
+                <div class="labtm-font-semibold labtm-text-sm"><%= item.test_name %></div>
+                <% if (item.reference_low !== null) { %>
+                <div class="labtm-text-xs labtm-text-muted">
+                  Ref: <%= parseFloat(item.reference_low) %>–<%= parseFloat(item.reference_high) %> <%= item.unit %>
+                </div>
+                <% } %>
+              </td>
+              <td>
+                <div class="labtm-text-sm labtm-font-semibold"><%= item.patient_name %></div>
+                <div class="labtm-text-xs labtm-text-muted"><%= item.patient_unique_id %></div>
+              </td>
+              <td>
+                <div class="labtm-text-xs"><code class="labtm-code"><%= item.sample_code %></code></div>
+                <div class="labtm-text-xs labtm-text-muted">
+                  <%= new Date(item.collected_at).toLocaleDateString('en-GB') %>
+                </div>
+              </td>
+              <td>
+                <% if (item.result_id) { %>
+                <strong class="labtm-font-mono" style="color:<%= item.flag === 'abnormal_high' ? 'var(--labtm-abnormal-high)' : item.flag === 'abnormal_low' ? 'var(--labtm-abnormal-low)' : 'var(--labtm-normal)' %>">
+                  <%= item.result_value %> <%= item.unit || '' %>
+                </strong>
+                <% } else { %>
+                <span class="labtm-text-muted labtm-text-xs">Not entered</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (item.result_id) { %>
+                  <%- include('../partials/result-flag', { flag: item.flag }) %>
+                <% } else { %>
+                  <span class="labtm-text-muted">—</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (item.verified) { %>
+                <span class="labtm-verified-badge">
+                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  Verified & Locked
+                </span>
+                <% } else if (item.result_id) { %>
+                <span class="labtm-status labtm-status-in_progress">Pending Verification</span>
+                <% } else { %>
+                <span class="labtm-status labtm-status-requested">No Result</span>
+                <% } %>
+              </td>
+              <td>
+                <div class="labtm-flex labtm-flex-gap-2">
+                  <% if (!item.verified) { %>
+                  <a href="/technician/results/<%= item.id %>/enter"
+                     class="labtm-btn labtm-btn-primary labtm-btn-sm">
+                    <%= item.result_id ? 'Edit' : 'Enter' %>
+                  </a>
+                  <% if (item.result_id) { %>
+                  <form method="POST" action="/technician/results/<%= item.result_id %>/delete"
+                        onsubmit="return confirm('Delete this result? This cannot be undone.')">
+                    <button type="submit" class="labtm-btn labtm-btn-danger labtm-btn-sm">Delete</button>
+                  </form>
+                  <% } %>
+                  <% } else { %>
+                  <span class="labtm-locked-badge">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                    Locked
+                  </span>
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="labtm-alert labtm-alert-warning labtm-mt-4">
+      <div>
+        <strong>Verification Lock Policy:</strong>
+        Once a result is verified, it is permanently locked and cannot be edited or deleted.
+        Only unverified results may be modified.
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>

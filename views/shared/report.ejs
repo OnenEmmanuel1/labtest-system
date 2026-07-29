@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/labtm.css" />
+</head>
+<body>
+
+<% if (!printMode) { %>
+<div class="labtm-app">
+  <%- include('../partials/sidebar', { currentPath: currentPath || '/doctor/orders' }) %>
+  <%- include('../partials/navbar', { pageTitle: 'Lab Report' }) %>
+  <main class="labtm-main">
+    <div class="labtm-content">
+
+      <div class="labtm-flex labtm-flex-between labtm-mb-6 labtm-no-print">
+        <div class="labtm-breadcrumb">
+          <a href="javascript:history.back()">← Back</a>
+          <span class="labtm-breadcrumb-sep">/</span>
+          <span>Report</span>
+        </div>
+        <div class="labtm-flex labtm-flex-gap-3">
+          <a href="?print=1" target="_blank" class="labtm-btn labtm-btn-outline">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print Report
+          </a>
+          <button onclick="window.print()" class="labtm-btn labtm-btn-primary">
+            Print Now
+          </button>
+        </div>
+      </div>
+<% } %>
+
+<!-- ─── REPORT BODY ─────────────────────────────────────── -->
+<div class="labtm-report">
+
+  <!-- Header -->
+  <div class="labtm-report-header">
+    <div>
+      <h1>LabTrackMS Clinical Laboratory</h1>
+      <p>Laboratory Test Report</p>
+      <p style="margin-top:8px;font-size:12px;opacity:0.7">
+        Report generated: <%= new Date().toLocaleDateString('en-GB', { weekday:'long', year:'numeric', month:'long', day:'numeric' }) %>
+        &nbsp;at <%= new Date().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) %>
+      </p>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;opacity:0.7;margin-bottom:4px">Order Number</div>
+      <div style="font-size:20px;font-weight:800;letter-spacing:-0.02em;font-family:monospace"><%= order.order_number %></div>
+      <div style="margin-top:8px">
+        <span style="padding:3px 10px;background:rgba(255,255,255,0.15);border-radius:4px;font-size:11px;font-weight:600;text-transform:capitalize">
+          <%= order.status.replace(/_/g,' ') %>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="labtm-report-body">
+
+    <!-- Patient Information -->
+    <div class="labtm-report-section">
+      <div class="labtm-report-section-title">Patient Information</div>
+      <div class="labtm-detail-grid">
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Patient Name</div>
+          <div class="labtm-detail-value" style="font-size:var(--labtm-fs-lg);font-weight:700"><%= order.patient_name %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Patient ID</div>
+          <div class="labtm-detail-value"><code class="labtm-code"><%= order.patient_unique_id %></code></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Date of Birth</div>
+          <div class="labtm-detail-value"><%= new Date(order.date_of_birth).toLocaleDateString('en-GB') %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Gender</div>
+          <div class="labtm-detail-value" style="text-transform:capitalize"><%= order.gender %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Phone</div>
+          <div class="labtm-detail-value"><%= order.phone || '—' %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Requesting Doctor</div>
+          <div class="labtm-detail-value"><%= order.doctor_name %></div>
+        </div>
+        <div class="labtm-detail-item">
+          <div class="labtm-detail-label">Order Date</div>
+          <div class="labtm-detail-value"><%= new Date(order.order_date).toLocaleDateString('en-GB') %></div>
+        </div>
+        <% if (order.address) { %>
+        <div class="labtm-detail-item" style="grid-column: span 2">
+          <div class="labtm-detail-label">Address</div>
+          <div class="labtm-detail-value"><%= order.address %></div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Test Results -->
+    <div class="labtm-report-section">
+      <div class="labtm-report-section-title">Test Results</div>
+
+      <% for (const item of items) { %>
+      <%
+        const hasResult = item.result_value !== null;
+        const flagClass = item.flag || 'normal';
+        const isAbnormal = item.flag && item.flag !== 'normal';
+      %>
+      <div class="labtm-report-result-row <%= hasResult ? flagClass : '' %>">
+        <div class="labtm-flex-between labtm-mb-4">
+          <div>
+            <div class="labtm-report-result-name"><%= item.test_name %></div>
+            <div class="labtm-text-xs labtm-text-muted labtm-mt-2"><%= item.department %></div>
+          </div>
+          <% if (hasResult) { %>
+            <%- include('../partials/result-flag', { flag: item.flag }) %>
+          <% } else { %>
+          <span class="labtm-status labtm-status-requested">Awaiting Result</span>
+          <% } %>
+        </div>
+
+        <div class="labtm-detail-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
+          <div class="labtm-detail-item">
+            <div class="labtm-detail-label">Result</div>
+            <div class="labtm-report-result-value" style="color:<%= item.flag === 'abnormal_high' ? 'var(--labtm-abnormal-high)' : item.flag === 'abnormal_low' ? 'var(--labtm-abnormal-low)' : 'var(--labtm-text-primary)' %>">
+              <%= hasResult ? item.result_value + ' ' + (item.unit || '') : '—' %>
+            </div>
+          </div>
+
+          <div class="labtm-detail-item">
+            <div class="labtm-detail-label">Reference Range</div>
+            <div class="labtm-report-result-range">
+              <% if (item.reference_low !== null && item.reference_high !== null) { %>
+                <%= parseFloat(item.reference_low) %> – <%= parseFloat(item.reference_high) %> <%= item.unit %>
+              <% } else { %>—<% } %>
+            </div>
+          </div>
+
+          <div class="labtm-detail-item">
+            <div class="labtm-detail-label">Sample Type</div>
+            <div class="labtm-detail-value"><%= item.sample_type || '—' %></div>
+          </div>
+
+          <div class="labtm-detail-item">
+            <div class="labtm-detail-label">Collection Time</div>
+            <div class="labtm-detail-value">
+              <%= item.collected_at ? new Date(item.collected_at).toLocaleString('en-GB') : '—' %>
+            </div>
+          </div>
+
+          <div class="labtm-detail-item">
+            <div class="labtm-detail-label">Verified By</div>
+            <div class="labtm-detail-value"><%= item.verified_by_name || '—' %></div>
+          </div>
+
+          <div class="labtm-detail-item">
+            <div class="labtm-detail-label">Verified At</div>
+            <div class="labtm-detail-value">
+              <%= item.verified_at ? new Date(item.verified_at).toLocaleString('en-GB') : '—' %>
+            </div>
+          </div>
+
+          <% if (item.tat_hours !== null) { %>
+          <div class="labtm-detail-item">
+            <div class="labtm-detail-label">Turnaround</div>
+            <div class="labtm-detail-value" style="color:<%= item.within_target ? 'var(--labtm-normal)' : 'var(--labtm-abnormal-high)' %>">
+              <%= item.tat_hours.toFixed(1) %>h <%= item.within_target ? '✓' : '(delayed)' %>
+            </div>
+          </div>
+          <% } %>
+        </div>
+
+        <% if (item.result_notes) { %>
+        <div class="labtm-mt-4" style="font-size:var(--labtm-fs-sm);color:var(--labtm-text-secondary);border-top:1px solid var(--labtm-border);padding-top:var(--labtm-space-3)">
+          <strong>Notes:</strong> <%= item.result_notes %>
+        </div>
+        <% } %>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Clinical notes -->
+    <% if (order.notes) { %>
+    <div class="labtm-report-section">
+      <div class="labtm-report-section-title">Clinical Notes</div>
+      <p style="font-size:var(--labtm-fs-base);color:var(--labtm-text-primary)"><%= order.notes %></p>
+    </div>
+    <% } %>
+
+    <!-- Abnormal flag summary -->
+    <% const abnormals = items.filter(i => i.flag && i.flag !== 'normal'); %>
+    <% if (abnormals.length) { %>
+    <div class="labtm-report-section">
+      <div class="labtm-report-section-title">⚠ Abnormal Results Summary</div>
+      <% for (const a of abnormals) { %>
+      <div class="labtm-result-alert <%= a.flag %>" style="margin-bottom:var(--labtm-space-3)">
+        <div class="labtm-result-alert-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+            <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div>
+          <div class="labtm-result-alert-label"><%= a.test_name %> — <%= a.flag === 'abnormal_high' ? 'ABOVE UPPER LIMIT' : 'BELOW LOWER LIMIT' %></div>
+          <div class="labtm-result-alert-value"><%= a.result_value %> <%= a.unit || '' %></div>
+          <% if (a.reference_low !== null) { %>
+          <div class="labtm-result-alert-ref">
+            Reference range: <%= parseFloat(a.reference_low) %> – <%= parseFloat(a.reference_high) %> <%= a.unit %>
+          </div>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
+    </div>
+    <% } %>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="labtm-report-footer">
+    <span>LabTrackMS — Clinical Laboratory Test Management System</span>
+    <span>Report generated: <%= new Date().toLocaleString('en-GB') %></span>
+  </div>
+
+</div><!-- /.labtm-report -->
+
+<% if (!printMode) { %>
+    </div><!-- /.labtm-content -->
+  </main>
+</div><!-- /.labtm-app -->
+<script src="/js/labtm.js"></script>
+<% } else { %>
+<script>window.onload = function() { window.print(); }</script>
+<% } %>
+
+</body>
+</html>

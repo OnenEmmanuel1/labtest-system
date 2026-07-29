@@ -1,0 +1,76 @@
+<%- include('../partials/head') %>
+<%- include('../partials/sidebar', { currentPath: '/admin/departments' }) %>
+<%- include('../partials/navbar', { pageTitle: 'Departments' }) %>
+
+<main class="labtm-main">
+  <div class="labtm-content">
+    <%- include('../partials/flash') %>
+
+    <div class="labtm-page-header">
+      <div>
+        <h1>Departments</h1>
+        <p>Manage laboratory departments that organize the test catalog.</p>
+      </div>
+    </div>
+
+    <!-- Add department form -->
+    <div class="labtm-card labtm-mb-6">
+      <div class="labtm-card-title labtm-mb-4">Add Department</div>
+      <form method="POST" action="/admin/departments" class="labtm-flex labtm-flex-gap-3">
+        <input class="labtm-input" type="text" name="name" placeholder="Department name e.g. Haematology" required style="max-width:360px;" />
+        <button type="submit" class="labtm-btn labtm-btn-primary">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add
+        </button>
+      </form>
+    </div>
+
+    <!-- Departments table -->
+    <div class="labtm-card">
+      <div class="labtm-card-header">
+        <div>
+          <div class="labtm-card-title">All Departments</div>
+          <div class="labtm-card-subtitle"><%= departments.length %> department<%= departments.length !== 1 ? 's' : '' %></div>
+        </div>
+      </div>
+      <div class="labtm-table-wrap">
+        <table class="labtm-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Department Name</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!departments.length) { %>
+            <tr><td colspan="4" class="labtm-table-empty">No departments yet. Add one above.</td></tr>
+            <% } %>
+            <% for (const dept of departments) { %>
+            <tr>
+              <td class="labtm-text-muted labtm-text-xs"><%= dept.id %></td>
+              <td class="labtm-font-semibold"><%= dept.name %></td>
+              <td class="labtm-text-sm labtm-text-muted"><%= new Date(dept.created_at).toLocaleDateString('en-GB') %></td>
+              <td>
+                <div class="labtm-flex labtm-flex-gap-2">
+                  <!-- Inline edit form -->
+                  <form method="POST" action="/admin/departments/<%= dept.id %>/edit" class="labtm-flex labtm-flex-gap-2" style="display:inline-flex">
+                    <input class="labtm-input" type="text" name="name" value="<%= dept.name %>" required style="width:200px;" />
+                    <button type="submit" class="labtm-btn labtm-btn-outline labtm-btn-sm">Save</button>
+                  </form>
+                  <form method="POST" action="/admin/departments/<%= dept.id %>/delete" onsubmit="return confirm('Delete this department? Tests linked to it will be orphaned.')">
+                    <button type="submit" class="labtm-btn labtm-btn-danger labtm-btn-sm">Delete</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('../partials/footer') %>
