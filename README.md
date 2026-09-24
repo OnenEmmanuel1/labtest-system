@@ -108,15 +108,15 @@ MySQL initialization scripts (`schema.sql` and `seed.sql`) will automatically po
 
 ## Default Test Credentials
 
-All accounts use password: `Password@123`
+All accounts use password: `password123`
 
 | Role | Name | Email | Password | Home Route |
 |---|---|---|---|---|
-| **Administrator** | Admin Lawal | `admin@labtm.com` | `Password@123` | `/admin/dashboard` |
-| **Doctor** | Dr. Sarah Adeyemi | `doctor1@labtm.com` | `Password@123` | `/doctor/dashboard` |
-| **Doctor** | Dr. Yemi Okafor | `doctor2@labtm.com` | `Password@123` | `/doctor/dashboard` |
-| **Technician** | Emmanuel Chukwu | `tech1@labtm.com` | `Password@123` | `/technician/dashboard` |
-| **Technician** | Ngozi Eze | `tech2@labtm.com` | `Password@123` | `/technician/dashboard` |
+| **Administrator** | Admin Lawal | `admin@labtm.com` | `password123` | `/admin/dashboard` |
+| **Doctor** | Dr. Sarah Adeyemi | `doctor1@labtm.com` | `password123` | `/doctor/dashboard` |
+| **Doctor** | Dr. Yemi Okafor | `doctor2@labtm.com` | `password123` | `/doctor/dashboard` |
+| **Technician** | Emmanuel Chukwu | `tech1@labtm.com` | `password123` | `/technician/dashboard` |
+| **Technician** | Ngozi Eze | `tech2@labtm.com` | `password123` | `/technician/dashboard` |
 
 ---
 

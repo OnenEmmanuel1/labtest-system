@@ -51,7 +51,10 @@
 
         <% if (!pendingCollection.length) { %>
         <div class="labtm-empty" style="padding:var(--labtm-space-8)">
-          <div class="labtm-text-sm labtm-text-muted">All orders have samples collected ✓</div>
+          <div class="labtm-flex labtm-flex-gap-2" style="justify-content:center;color:var(--labtm-normal);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="labtm-text-sm">All samples collected</span>
+          </div>
         </div>
         <% } %>
 
@@ -81,7 +84,10 @@
 
         <% if (!pendingResults.length) { %>
         <div class="labtm-empty" style="padding:var(--labtm-space-8)">
-          <div class="labtm-text-sm labtm-text-muted">All results have been entered ✓</div>
+          <div class="labtm-flex labtm-flex-gap-2" style="justify-content:center;color:var(--labtm-normal);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            <span class="labtm-text-sm">All results entered</span>
+          </div>
         </div>
         <% } %>
 
@@ -106,12 +112,15 @@
           <div class="labtm-card-title">Awaiting Verification</div>
           <div class="labtm-card-subtitle">Results entered but not yet verified — action required</div>
         </div>
-        <a href="/technician/verify" class="labtm-btn labtm-btn-accent">Verify Results →</a>
+        <a href="/technician/verify" class="labtm-btn labtm-btn-accent">Verify Results</a>
       </div>
 
       <% if (!pendingVerification.length) { %>
       <div class="labtm-empty" style="padding:var(--labtm-space-8)">
-        <div class="labtm-text-sm labtm-text-muted">No results awaiting verification ✓</div>
+        <div class="labtm-flex labtm-flex-gap-2" style="justify-content:center;color:var(--labtm-normal);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="labtm-text-sm">No results awaiting verification</span>
+        </div>
       </div>
       <% } else { %>
       <div class="labtm-table-wrap">

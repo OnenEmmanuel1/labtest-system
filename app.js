@@ -102,7 +102,7 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`\n✅  LabTrackMS running → http://localhost:${PORT}\n`);
   console.log('   Roles: admin@labtm.com | doctor1@labtm.com | tech1@labtm.com');
-  console.log('   Password: Password@123\n');
+  console.log('   Password: password123\n');
 });
 
 module.exports = app;

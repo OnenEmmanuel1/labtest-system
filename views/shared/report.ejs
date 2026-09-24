@@ -168,7 +168,7 @@
           <div class="labtm-detail-item">
             <div class="labtm-detail-label">Turnaround</div>
             <div class="labtm-detail-value" style="color:<%= item.within_target ? 'var(--labtm-normal)' : 'var(--labtm-abnormal-high)' %>">
-              <%= item.tat_hours.toFixed(1) %>h <%= item.within_target ? '✓' : '(delayed)' %>
+              <%= item.tat_hours.toFixed(1) %>h <span class="labtm-text-xs" style="font-weight:600">(<%= item.within_target ? 'Within SLA' : 'Delayed' %>)</span>
             </div>
           </div>
           <% } %>
@@ -195,7 +195,10 @@
     <% const abnormals = items.filter(i => i.flag && i.flag !== 'normal'); %>
     <% if (abnormals.length) { %>
     <div class="labtm-report-section">
-      <div class="labtm-report-section-title">⚠ Abnormal Results Summary</div>
+      <div class="labtm-report-section-title" style="display:flex;align-items:center;gap:6px;color:var(--labtm-abnormal-high)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Abnormal Results Summary
+      </div>
       <% for (const a of abnormals) { %>
       <div class="labtm-result-alert <%= a.flag %>" style="margin-bottom:var(--labtm-space-3)">
         <div class="labtm-result-alert-icon">

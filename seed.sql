@@ -1,8 +1,8 @@
 -- ============================================================
 -- LabTrackMS Seed Data  v2.0
 -- Run AFTER schema.sql
--- Default password for ALL accounts: Password@123
--- bcrypt hash (saltRounds=12): $2b$12$KiJ0Pf5pj0Mi5P6ZUwcz0OTX4.AA6klPn2zUmZ37FWgCKTGnaWHCu
+-- Default password for ALL accounts: password123
+-- bcrypt hash (saltRounds=12): $2b$12$NgKSXV0C3xtlu05C3JY4F.DlpYUHUgbPmGsX585JMqDKVqg3HIHyW
 -- ============================================================
 USE labtm_db;
 
@@ -10,11 +10,11 @@ USE labtm_db;
 -- 1. USERS  (1 admin, 2 technicians, 2 doctors)
 -- ─────────────────────────────────────────
 INSERT INTO users (name, email, password_hash, role) VALUES
-('Admin Lawal',          'admin@labtm.com',       '$2b$12$KiJ0Pf5pj0Mi5P6ZUwcz0OTX4.AA6klPn2zUmZ37FWgCKTGnaWHCu', 'admin'),
-('Emmanuel Chukwu',      'tech1@labtm.com',        '$2b$12$KiJ0Pf5pj0Mi5P6ZUwcz0OTX4.AA6klPn2zUmZ37FWgCKTGnaWHCu', 'technician'),
-('Ngozi Eze',            'tech2@labtm.com',        '$2b$12$KiJ0Pf5pj0Mi5P6ZUwcz0OTX4.AA6klPn2zUmZ37FWgCKTGnaWHCu', 'technician'),
-('Dr. Sarah Adeyemi',    'doctor1@labtm.com',      '$2b$12$KiJ0Pf5pj0Mi5P6ZUwcz0OTX4.AA6klPn2zUmZ37FWgCKTGnaWHCu', 'doctor'),
-('Dr. Yemi Okafor',      'doctor2@labtm.com',      '$2b$12$KiJ0Pf5pj0Mi5P6ZUwcz0OTX4.AA6klPn2zUmZ37FWgCKTGnaWHCu', 'doctor');
+('Admin Lawal',          'admin@labtm.com',       '$2b$12$NgKSXV0C3xtlu05C3JY4F.DlpYUHUgbPmGsX585JMqDKVqg3HIHyW', 'admin'),
+('Emmanuel Chukwu',      'tech1@labtm.com',        '$2b$12$NgKSXV0C3xtlu05C3JY4F.DlpYUHUgbPmGsX585JMqDKVqg3HIHyW', 'technician'),
+('Ngozi Eze',            'tech2@labtm.com',        '$2b$12$NgKSXV0C3xtlu05C3JY4F.DlpYUHUgbPmGsX585JMqDKVqg3HIHyW', 'technician'),
+('Dr. Sarah Adeyemi',    'doctor1@labtm.com',      '$2b$12$NgKSXV0C3xtlu05C3JY4F.DlpYUHUgbPmGsX585JMqDKVqg3HIHyW', 'doctor'),
+('Dr. Yemi Okafor',      'doctor2@labtm.com',      '$2b$12$NgKSXV0C3xtlu05C3JY4F.DlpYUHUgbPmGsX585JMqDKVqg3HIHyW', 'doctor');
 
 -- ─────────────────────────────────────────
 -- 2. DEPARTMENTS  (2 as required)

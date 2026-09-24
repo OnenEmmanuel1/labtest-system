@@ -1,10 +1,10 @@
 /* ============================================================
-   LabTrackMS Design System — labtm.css  v2.0
-   Flat design · No gradients · Inter font · labtm-* prefix
+   LabTrackMS Design System — labtm.css  v2.1
+   Clinical Flat design · Zero gradients · Plus Jakarta Sans · labtm-* prefix
    All design tokens in one CSS variables block
    ============================================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 /* ─────────────────────────────────────────
    DESIGN TOKENS — SINGLE SOURCE OF TRUTH
@@ -16,12 +16,12 @@
   --labtm-primary-light:    #1B4F8A;
   --labtm-primary-muted:    #E8EEF7;
 
-  /* ── Accent ─ Teal */
+  /* ── Accent ─ Clinical Teal */
   --labtm-accent:           #0D8C7A;
   --labtm-accent-dark:      #096B5D;
   --labtm-accent-light:     #E0F5F2;
 
-  /* ── Result flags — MUST BE UNMISTAKABLE */
+  /* ── Result flags — UNMISTAKABLE */
   --labtm-normal:           #145A32;
   --labtm-normal-bg:        #D4EFDF;
   --labtm-normal-border:    #A9DFBF;
@@ -48,17 +48,17 @@
 
   /* ── Neutrals */
   --labtm-white:            #FFFFFF;
-  --labtm-bg:               #EEF2F7;
+  --labtm-bg:               #EFF3F8;
   --labtm-bg-alt:           #F4F7FB;
   --labtm-surface:          #FFFFFF;
   --labtm-surface-alt:      #F8FAFC;
-  --labtm-border:           #DDE3EE;
-  --labtm-border-dark:      #C8D0E0;
+  --labtm-border:           #D9E2EC;
+  --labtm-border-dark:      #BCCCDC;
 
   /* ── Text */
-  --labtm-text-primary:     #111827;
-  --labtm-text-secondary:   #374151;
-  --labtm-text-muted:       #6B7280;
+  --labtm-text-primary:     #102A43;
+  --labtm-text-secondary:   #334E68;
+  --labtm-text-muted:       #627D98;
   --labtm-text-inverse:     #FFFFFF;
 
   /* ── Role accent colors */
@@ -78,7 +78,7 @@
 
   /* ── Topbar */
   --labtm-navbar-bg:        #FFFFFF;
-  --labtm-navbar-border:    #DDE3EE;
+  --labtm-navbar-border:    #D9E2EC;
   --labtm-navbar-height:    60px;
 
   /* ── Spacing scale (8px base) */
@@ -94,29 +94,30 @@
   --labtm-space-16: 64px;
 
   /* ── Typography */
-  --labtm-font:     'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --labtm-font:     'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --labtm-font-mono:'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
   --labtm-fs-xs:    11px;
-  --labtm-fs-sm:    12px;
+  --labtm-fs-sm:    12.5px;
   --labtm-fs-base:  14px;
-  --labtm-fs-md:    15px;
-  --labtm-fs-lg:    17px;
+  --labtm-fs-md:    15.5px;
+  --labtm-fs-lg:    17.5px;
   --labtm-fs-xl:    20px;
   --labtm-fs-2xl:   24px;
   --labtm-fs-3xl:   30px;
   --labtm-fs-4xl:   36px;
 
-  /* ── Border radius */
-  --labtm-radius-xs:  4px;
-  --labtm-radius-sm:  8px;
-  --labtm-radius:    12px;
-  --labtm-radius-lg: 16px;
-  --labtm-radius-xl: 20px;
+  /* ── Border radius — varied hierarchy */
+  --labtm-radius-xs:  3px;
+  --labtm-radius-sm:  6px;
+  --labtm-radius:     8px;
+  --labtm-radius-lg: 12px;
+  --labtm-radius-xl: 16px;
 
-  /* ── Shadows */
-  --labtm-shadow-xs: 0 1px 3px rgba(0,0,0,0.06);
-  --labtm-shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
-  --labtm-shadow:    0 4px 16px rgba(0,0,0,0.07);
-  --labtm-shadow-lg: 0 8px 30px rgba(0,0,0,0.09);
+  /* ── Shadows — crisp, restrained, zero neon */
+  --labtm-shadow-xs: 0 1px 2px rgba(16, 42, 67, 0.04);
+  --labtm-shadow-sm: 0 2px 4px rgba(16, 42, 67, 0.05);
+  --labtm-shadow:    0 4px 12px rgba(16, 42, 67, 0.07);
+  --labtm-shadow-lg: 0 8px 24px rgba(16, 42, 67, 0.09);
 
   /* ── Transitions */
   --labtm-transition: 140ms ease;
@@ -391,27 +392,29 @@ ul, ol { list-style: none; }
 }
 
 /* ─────────────────────────────────────────
-   CARDS
+   CARDS & SURFACES
    ───────────────────────────────────────── */
 .labtm-card {
   background:    var(--labtm-surface);
   border:        1px solid var(--labtm-border);
   border-radius: var(--labtm-radius);
   padding:       var(--labtm-space-6);
-  box-shadow:    var(--labtm-shadow-sm);
+  box-shadow:    var(--labtm-shadow-xs);
 }
 .labtm-card + .labtm-card { margin-top: var(--labtm-space-6); }
 .labtm-card-header {
-  display:       flex;
-  align-items:   center;
+  display:         flex;
+  align-items:     center;
   justify-content: space-between;
-  margin-bottom: var(--labtm-space-5);
-  gap:           var(--labtm-space-4);
+  margin-bottom:   var(--labtm-space-5);
+  gap:             var(--labtm-space-4);
+  padding-bottom:  var(--labtm-space-3);
+  border-bottom:   1px solid var(--labtm-border);
 }
 .labtm-card-title {
-  font-size:   var(--labtm-fs-lg);
-  font-weight: 600;
-  color:       var(--labtm-text-primary);
+  font-size:      var(--labtm-fs-lg);
+  font-weight:    700;
+  color:          var(--labtm-text-primary);
   letter-spacing: -0.01em;
 }
 .labtm-card-subtitle {
@@ -421,53 +424,55 @@ ul, ol { list-style: none; }
 }
 
 /* ─────────────────────────────────────────
-   STAT CARDS
+   STAT CARDS — DISTINCTIVE & ASYMMETRIC
    ───────────────────────────────────────── */
 .labtm-stats-grid {
   display:               grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
   gap:                   var(--labtm-space-4);
   margin-bottom:         var(--labtm-space-6);
 }
 .labtm-stat-card {
   background:    var(--labtm-surface);
   border:        1px solid var(--labtm-border);
-  border-radius: var(--labtm-radius);
+  border-top:    3px solid var(--labtm-primary-light);
+  border-radius: var(--labtm-radius-sm);
   padding:       var(--labtm-space-5) var(--labtm-space-6);
   box-shadow:    var(--labtm-shadow-xs);
-  transition:    box-shadow var(--labtm-transition), transform var(--labtm-transition);
+  transition:    border-color var(--labtm-transition), transform var(--labtm-transition);
 }
 .labtm-stat-card:hover {
-  box-shadow: var(--labtm-shadow);
-  transform:  translateY(-1px);
+  border-color: var(--labtm-primary);
+  transform:    translateY(-1px);
 }
 .labtm-stat-card-label {
-  font-size:      var(--labtm-fs-sm);
-  font-weight:    500;
+  font-size:      var(--labtm-fs-xs);
+  font-weight:    700;
   color:          var(--labtm-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
 }
 .labtm-stat-card-icon {
-  width:          36px;
-  height:         36px;
-  border-radius:  var(--labtm-radius-sm);
+  width:          34px;
+  height:         34px;
+  border-radius:  var(--labtm-radius-xs);
   display:        flex;
   align-items:    center;
   justify-content: center;
   flex-shrink:    0;
 }
-.labtm-stat-card-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.labtm-stat-card-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .labtm-stat-card-value {
   font-size:      var(--labtm-fs-3xl);
   font-weight:    800;
   color:          var(--labtm-text-primary);
   letter-spacing: -0.03em;
-  line-height:    1;
+  line-height:    1.1;
   margin-top:     var(--labtm-space-3);
+  font-variant-numeric: tabular-nums;
 }
 .labtm-stat-card-sub {
-  font-size:  var(--labtm-fs-sm);
+  font-size:  var(--labtm-fs-xs);
   color:      var(--labtm-text-muted);
   margin-top: var(--labtm-space-1);
 }
